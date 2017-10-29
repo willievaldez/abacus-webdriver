@@ -1,4 +1,5 @@
 const gatherStepDefinitions = require(`${__dirname}/step-finder`);
+const gatherPageObjects = require(`${__dirname}/pageObject-finder`);
 
 webdriver = require('selenium-webdriver'),
   By = webdriver.By,
@@ -8,10 +9,9 @@ driver = new webdriver.Builder()
   .forBrowser('chrome')
   .build();
 
-
-// TODO: add calls to hooks and what not here
-gatherStepDefinitions(process.argv[3]).then((stepDefs) => {
+Promise.all(gatherPageObjects('./page_objects/'),gatherStepDefinitions('./step_definitions/') ).then((results) => {
   const validScenarios = JSON.parse(process.argv[2]);
+  const stepDefs = results[1];
 
   validScenarios.forEach((scenario) => {
     let stepNum = 0;
