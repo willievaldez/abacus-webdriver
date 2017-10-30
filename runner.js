@@ -9,7 +9,12 @@ driver = new webdriver.Builder()
   .forBrowser('chrome')
   .build();
 
-Promise.all(gatherPageObjects('./page_objects/'),gatherStepDefinitions('./step_definitions/') ).then((results) => {
+
+
+const promises = [gatherPageObjects('./page_objects/'),gatherStepDefinitions('./step_definitions/')];
+
+return Promise.all(promises).then((results) => {
+  // console.log("Done with both");
   const validScenarios = JSON.parse(process.argv[2]);
   const stepDefs = results[1];
 

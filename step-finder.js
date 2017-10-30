@@ -1,4 +1,4 @@
-const readDir = require(`${__dirname}/scripts`).readDir;
+const readDir = require(`${__dirname}/scripts`).readDirectory;
 
 module.exports = function(dir) {
   const stepDefs = [];
@@ -9,10 +9,10 @@ module.exports = function(dir) {
   };
 
   return new Promise((res, rej)=>{
-    readDir(dir, /^(.*)-steps.js$/).then((stepDefinitionFiles)=>{
+    readDir(dir, /^(.*)-steps.js$/).then(function(stepDefinitionFiles) {
       let readFiles = 0;
       stepDefinitionFiles.forEach((stepDefFilepath)=>{
-        const stepsToParse = require(stepDefFilepath);
+        const stepsToParse = require("../."+stepDefFilepath);
         stepsToParse(sp, sp, sp, sp, sp);
         readFiles++;
         if(readFiles === stepDefinitionFiles.length) res(stepDefs);

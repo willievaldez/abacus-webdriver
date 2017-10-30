@@ -1,5 +1,5 @@
 const fs = require('fs');
-const readDir = require(`${__dirname}/scripts`).readDir;
+const readDir = require(`${__dirname}/scripts`).readDirectory;
 
 const parseFeatureFile = function(filename) {
   let lastTags = [];

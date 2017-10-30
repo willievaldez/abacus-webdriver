@@ -1,21 +1,30 @@
-const readDir = function(dir, fileRegex) {
+const readDirectory = function(dir, fileRegex) {
   const fs = require('fs');
   const readDirectories = {};
   let allFilesArray = [];
 
-  const readDir = function(dir) {
+  const readDir = function(dir, level) {
     let filesRead = 0;
-    return new Promise((res, rej)=> {
+    return new Promise((res, rej) => {
       readDirectories[dir] = false;
       fs.readdir(dir, (err, files) => {
-        if(err) return console.log(err);
+        if(err) console.log(err);
         files.forEach((file) => {
           fs.lstat(`${dir}${file}`, (err, stats) => {
             filesRead++;
-            if (err) return console.log(err);
+            if (err) console.log(err);
             else if (stats.isDirectory()) {
-              readDir(`${dir}${file}/`).then((moreFilesArray)=> {
+              readDir(`${dir}${file}/`, level+1).then((moreFilesArray) => {
                 allFilesArray = allFilesArray.concat(moreFilesArray);
+                if (filesRead === files.length) {
+                  readDirectories[dir] = true;
+                  let returnFromFunc = true;
+                  const directories = Object.keys(readDirectories);
+                  for (let i = 0; i < directories.length; i++) {
+                    if(readDirectories[directories[i]] === false) returnFromFunc = false;
+                  }
+                  if (returnFromFunc) res(moreFilesArray);
+                }
               });
             }
             else if (stats.isFile() && fileRegex.test(file)) {
@@ -28,7 +37,6 @@ const readDir = function(dir, fileRegex) {
               for (let i = 0; i < directories.length; i++) {
                 if(readDirectories[directories[i]] === false) returnFromFunc = false;
               }
-
               if (returnFromFunc) res(allFilesArray);
             }
           });
@@ -37,7 +45,7 @@ const readDir = function(dir, fileRegex) {
     });
   };
 
-  return readDir(dir);
+  return readDir(dir, 0);
 };
 
-module.exports = {readDir};
+module.exports = {readDirectory};
