@@ -1,6 +1,6 @@
 {
   "name": "cucumber-webdriver-js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "exports.js",
   "dependencies": {
@@ -8,7 +8,9 @@
     "babel-register": "^6.26.0",
     "chai": "4.1.1",
     "chai-as-promised": "7.1.1",
+    "chance": "1.0.10",
     "dotenv": "^4.0.0",
+    "moment":"2.18.1",
     "selenium-webdriver": "^3.6.0"
   },
   "devDependencies": {},
