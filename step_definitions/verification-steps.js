@@ -2,27 +2,16 @@ module.exports = ({ Then }) => {
 
   Then(/^user is taken to the "([^"]*)" page$/, (pageURI, next) => {
     global.pageID = pageURI;
-    const changedURL = new Promise((fulfill, reject) => {
-      let currentUrl;
-      let newestUrl;
-      driver.getCurrentUrl().then((url) => {
-        currentUrl = url;
-        if (pageMap[global.pageID].URL.test(url)) {
-          fulfill(url);
-        } else {
-          driver.wait(() => {
-            return driver.getCurrentUrl().then((url2) => {
-              newestUrl = url2;
-              return url2 !== currentUrl;
-            });
-          }).then(() => {
-            fulfill(newestUrl);
-          });
-        }
-      });
-
+    driver.wait(until.urlMatches(pageMap[global.pageID].URL), 5000, "User is never redirected")
+      .catch((err)=>{
+        return err;
+      })
+      .then((result) => {
+        if (result !== true)
+          next(result);
+        else
+          next();
     });
-    expect(changedURL).to.eventually.match(pageMap[pageID].URL).and.notify(next);
   });
 
   // Then(/^the "([^"]*)" element value contains "([^"]*)"$/, (buttonText, text, next) => {
@@ -177,11 +166,8 @@ module.exports = ({ Then }) => {
     const elementID = elementText.replace(/ /g, '_').toUpperCase();
 
     const isPresentPromise = new Promise((resolve, reject)=>{
-      driver.wait(until.elementLocated(pageMap[global.pageID][elementID]), 3000)
-        .then(resolve)
-        .catch((e)=>{
-          reject(e);
-        });
+      driver.wait(until.elementLocated(pageMap[global.pageID][elementID].locator), 3000)
+        .then(resolve);
     });
 
     expect(isPresentPromise).to.eventually.be.ok.and.notify(next);
