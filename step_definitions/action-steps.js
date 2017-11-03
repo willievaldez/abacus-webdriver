@@ -33,18 +33,9 @@ module.exports = ({ Given, When, Then }) => {
 
     let expectedString = text;
 
-    // TODO: Implement localstorage and random generation
-    // if (text.match(/(?:\*)/)) expectedString = localStorage.getItem(text.match(/\*([^*]*)\*/)[1]);
-    /* else */if (text.match(/(?:#)/)) {
+    if (text.match(/(?:#)/)) {
       expectedString = process.env[text.match(/#([^#]*)#/)[1]];
-    } // else if (text.match(/(?:%)/)) {
-    //   const generator = text.match(/%([^%]*)%/)[1];
-    //   if (generator.match(/between([0-9]{2})and([0-9]{2})/)) {
-    //     const min = generator.match(/between([0-9]{2})and([0-9]{2})/)[1];
-    //     const max = generator.match(/between([0-9]{2})and([0-9]{2})/)[2];
-    //     expectedString = generatedValues.randomBirthdayWithinRange(min, max);
-    //   }        else          { expectedString = generatedValues[generator](); }
-    // }
+    }
 
     pageMap[global.pageID][fieldID].clear();
     pageMap[global.pageID][fieldID].sendKeys(expectedString).then(next);
@@ -52,30 +43,19 @@ module.exports = ({ Given, When, Then }) => {
 
   When(/^user selects "(.*)" from the "(.*)" drop down$/, (text, buttonText, next) => {
     const buttonID = buttonText.replace(/ /g, '_').toUpperCase();
-    driver.findElement(pageMap[global.pageID][buttonID].locator).click().then(() => {
-      driver.findElement(pageMap[global.pageID][buttonID].locator).findElements(by.xpath(`*[normalize-space(text()) = "${text}" and not(contains(@style,'display') and contains(@style,'none'))]`)).then((elements)=>{
-        const toClick = elements[elements.length - 1];
-        toClick.click().then(next);
-      });
+    pageMap[global.pageID][buttonID].click();
+    pageMap[global.pageID][buttonID].findElements(by.xpath(`*[normalize-space(text()) = "${text}" and not(contains(@style,'display') and contains(@style,'none'))]`)).then((elements)=>{
+      const toClick = elements[elements.length - 1];
+      toClick.click().then(next);
     });
   });
 
 
   When(/^user enters values into the following fields$/, (table, next) => {
-    console.log(table);
     const hash = table.rowsHash();
     const keys = Object.keys(hash);
     for (let i = 0; i < keys.length; i++) {
       const fieldID = keys[i].replace(/ /g, '_').toUpperCase();
-      // if (hash[key].match(/(?:%)/)) {
-      //   const generator = hash[key].match(/%([^%]*)%/)[1];
-      //   if (generator.match(/between([0-9]{2})and([0-9]{2})/)) {
-      //     const min = generator.match(/between([0-9]{2})and([0-9]{2})/)[1];
-      //     const max = generator.match(/between([0-9]{2})and([0-9]{2})/)[2];
-      //     hash[key] = generatedValues.randomBirthdayWithinRange(min, max);
-      //   }        else          { hash[key] = generatedValues[generator](); }
-      // }
-      // localStorage.setItem(key, hash[key]);
       pageMap[global.pageID][fieldID].sendKeys(hash[keys[i]]);
       driver.actions().sendKeys(webdriver.Key.TAB).perform().then(()=>{
         if (i === keys.length - 1) next();

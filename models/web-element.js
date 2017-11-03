@@ -26,5 +26,28 @@ module.exports = function(locator){
     });
   };
 
+  myElement.findElements = function(byLocator) {
+    return driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM").then(function(){
+      const parentElement = driver.findElement(myElement.locator);
+      return parentElement.findElements(byLocator);
+    });
+  };
+
+  myElement.findElement = function(byLocator) {
+    return driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM").then(function(){
+      const parentElement = driver.findElement(myElement.locator);
+      return parentElement.findElement(byLocator);
+    });
+  };
+
+  myElement.getText = function() {
+    return driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM").then(function(){
+      const elementToRead = driver.findElement(myElement.locator);
+      return driver.wait(until.elementIsVisible(elementToRead)).then(function() {
+        return elementToRead.getText();
+      });
+    });
+  };
+
   return myElement;
 };

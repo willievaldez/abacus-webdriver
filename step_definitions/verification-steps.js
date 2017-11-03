@@ -21,31 +21,26 @@ module.exports = ({ Then }) => {
   //     expect(pageMap[global.pageID][buttonID].getAttribute('value')).to.eventually.contain(text).and.notify(next);
   //   });
   // });
-  //
-  // Then(/^the "([^"]*)" element text contains "([^"]*)"$/, (labelText, text, next) => {
-  //   const labelID = labelText.replace(/ /g, '_').toUpperCase();
-  //
-  //   let expectedString = text;
-  //   if (text.match(/(?:\*)/)) expectedString = localStorage.getItem(text.match(/\*([^*]*)\*/)[1]).toUpperCase();
-  //
-  //   browser.wait(pageMap[global.pageID][labelID].isPresent()).then(() => {
-  //     expect(pageMap[global.pageID][labelID].getText()).to.eventually.contain(expectedString)
-  //       .and.notify(next);
-  //   });
-  // });
-  //
-  // Then(/^the "([^"]*)" element text is "([^"]*)"$/, (labelText, text, next) => {
-  //   const labelID = labelText.replace(/ /g, '_').toUpperCase();
-  //
-  //   let expectedString = text;
-  //   if (text.match(/(?:\*)/)) expectedString = localStorage.getItem(text.match(/\*([^*]*)\*/)[1]).toUpperCase();
-  //
-  //   browser.wait(pageMap[global.pageID][labelID].isPresent()).then(() => {
-  //     expect(pageMap[global.pageID][labelID].getText()).to.eventually.equal(expectedString)
-  //         .and.notify(next);
-  //   });
-  // });
-  //
+
+  Then(/^the "([^"]*)" element text contains "([^"]*)"$/, (labelText, text, next) => {
+    const labelID = labelText.replace(/ /g, '_').toUpperCase();
+
+    let expectedString = text;
+    // if (text.match(/(?:\*)/)) expectedString = localStorage.getItem(text.match(/\*([^*]*)\*/)[1]).toUpperCase();
+    // TODO: use driver.wait(until.elementTextContains())
+    expect(pageMap[global.pageID][labelID].getText()).to.eventually.contain(expectedString).and.notify(next);
+  });
+
+  Then(/^the "([^"]*)" element text is "([^"]*)"$/, (labelText, text, next) => {
+    const labelID = labelText.replace(/ /g, '_').toUpperCase();
+
+    let expectedString = text;
+    // if (text.match(/(?:\*)/)) expectedString = localStorage.getItem(text.match(/\*([^*]*)\*/)[1]).toUpperCase();
+
+    // TODO: use driver.wait(until.elementTextDisplays())
+    expect(pageMap[global.pageID][labelID].getText()).to.eventually.equal(expectedString).and.notify(next);
+  });
+
   // Then(/^the "([^"]*)" element value does not contain "([^"]*)"$/, (buttonText, text, next) => {
   //   const buttonID = buttonText.replace(/ /g, '_').toUpperCase();
   //   browser.wait(pageMap[global.pageID][buttonID].isPresent()).then(() => {
@@ -164,7 +159,7 @@ module.exports = ({ Then }) => {
 
   Then(/^the "([^"]*)" element is present$/, (elementText, next) => {
     const elementID = elementText.replace(/ /g, '_').toUpperCase();
-
+    // TODO: What if element isn't present??
     const isPresentPromise = new Promise((resolve, reject)=>{
       driver.wait(until.elementLocated(pageMap[global.pageID][elementID].locator), 3000)
         .then(resolve);
