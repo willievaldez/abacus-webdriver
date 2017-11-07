@@ -69,19 +69,70 @@ module.exports = function (locator) {
         });
     };
 
+    myElement.isDisplayed = function () {
+        return new Promise((resolve, reject) => {
+            return driver.wait(until.elementLocated(myElement.locator), 2000, "Element not in DOM")
+              .then(() => {
+                  driver.findElement(myElement.locator).isDisplayed().then((isDisplayed) => {
+                      resolve(isDisplayed);
+                  })
+              })
+              .catch((err) => {
+                  resolve(false);
+              });
+        });
+    };
+
+    // Returns a promise that resolves when the location becomes static
+    myElement.waitForStaticLocation = function () {
+        return new Promise((resolve, reject) => {
+            let location = {x: -1, y: -1};
+            let streak = 0;
+            driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM")
+              .then(() => {
+                  var start = new Date();
+                  const compareLocation = function () {
+                      var end = new Date() - start;
+                      if(end / 1000 > 3) resolve('Looks like your element has the zoomies');
+                      driver.findElement(myElement.locator).getLocation().then(({x, y}) => {
+                          console.log("_______");
+                          console.log(`Current: (${location.x}, ${location.y})`);
+                          console.log(`New: (${x}, ${y})`);
+                          console.log("_______");
+                          if (location.x === x && location.y === y) {
+                              streak++;
+                              if(streak >= 5) resolve();
+                              else compareLocation();
+                          }
+                          else {
+                              location = {x, y};
+                              streak = 0;
+                              compareLocation();
+                          }
+                      })
+                  };
+                  compareLocation();
+              })
+              .catch((err) => {
+                  resolve(err);
+              });
+        });
+
+    };
+
     // waits for info extracted from an element to satisfy the inputted matching text
     // params:
     // extractInfo = function that takes in an element, and returns a promise to the necessary information
     // matchFunc = function that takes two text elements and returns true or false based on the comparison
     // expectedText = the text that the extracted info is compared to
     const waitFor = function (extractInfo, matchFunc, expectedText) {
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
             const waitPromise = new Promise((resolve, reject) => {
                 var start = new Date();
                 let endCheck = false;
-                const checkTextFunction = function(toPrint) {
+                const checkTextFunction = function (toPrint) {
                     var end = new Date() - start;
-                    if (end/1000 > 3) endCheck = true;
+                    if (end / 1000 > 3) endCheck = true;
                     if (endCheck) return;
 
                     const testElement = driver.findElement(myElement.locator);
@@ -93,7 +144,7 @@ module.exports = function (locator) {
                               endCheck = true;
                               resolve(true);
                           }
-                          else checkTextFunction("Text was"+text);
+                          else checkTextFunction("Text was" + text);
                       })
                       .catch(checkTextFunction);
 
@@ -107,7 +158,7 @@ module.exports = function (locator) {
                   return err;
               })
               .then((result) => {
-                  if(result === true) resolve();
+                  if (result === true) resolve();
                   else resolve(result);
               });
         });
@@ -120,21 +171,21 @@ module.exports = function (locator) {
               is: (text) => {
                   return waitFor((testElement) => {
                       return testElement.getText();
-                  },(actual, expected) => {
+                  }, (actual, expected) => {
                       return actual === expected;
                   }, text);
               },
               matches: (text) => {
                   return waitFor((testElement) => {
                       return testElement.getText();
-                  },(actual, expected) => {
+                  }, (actual, expected) => {
                       return expected.test(actual);
                   }, text);
               },
               contains: (text) => {
                   return waitFor((testElement) => {
                       return testElement.getText();
-                  },(actual, expected) => {
+                  }, (actual, expected) => {
                       return actual.indexOf(expected) > -1;
                   }, text);
               }
@@ -143,21 +194,21 @@ module.exports = function (locator) {
               is: (text) => {
                   return waitFor((testElement) => {
                       return testElement.getAttribute('value');
-                  },(actual, expected) => {
+                  }, (actual, expected) => {
                       return actual === expected;
                   }, text);
               },
               matches: (text) => {
                   return waitFor((testElement) => {
                       return testElement.getAttribute('value');
-                  },(actual, expected) => {
+                  }, (actual, expected) => {
                       return expected.test(actual);
                   }, text);
               },
               contains: (text) => {
                   return waitFor((testElement) => {
                       return testElement.getAttribute('value');
-                  },(actual, expected) => {
+                  }, (actual, expected) => {
                       return actual.indexOf(expected) > -1;
                   }, text);
               }

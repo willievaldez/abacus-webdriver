@@ -13,16 +13,19 @@ const writeJson = function(conglomeratedReport, cb) {
 
 module.exports = function(conglomeratedReport, callback) {
     writeJson(conglomeratedReport, () => {
-        let htmlsource = '<html><head><style>'
-        htmlsource += '*{padding: 5;margin: 5;}.fit {max-width: 100%;max-height: 100%;}.center {display: block;margin: auto;}';
-        htmlsource += '</style></head><body>';
-        htmlsource += '<script> function toggleShow(id) {var x = document.getElementById(id);if (x.style.display === "none") {x.style.display = "block";} else {x.style.display = "none";}} </script>';
+        let htmlsource = '';
+        let numPassed = 0;
+        let numFailed = 0;
         for (let j = 0; j < conglomeratedReport.length; j++) {
             const oneProcessReport = conglomeratedReport[j];
             for (let k = 0; k < oneProcessReport.length; k++) {
                 const scenarioResult = oneProcessReport[k];
                 let color = 'green';
-                if (scenarioResult.status === 'Fail') color = 'red';
+                if (scenarioResult.status === 'Fail') {
+                    numFailed++;
+                    color = 'red';
+                }
+                else numPassed++;
                 htmlsource += `<h2 onclick="toggleShow('${j}_${k}')" style="color:${color};">${scenarioResult.title}</h2>`;
                 htmlsource += `<div id="${j}_${k}" style="display: none;">`;
                 for (let s = 0; s < scenarioResult.steps.length; s++){
@@ -42,6 +45,13 @@ module.exports = function(conglomeratedReport, callback) {
             }
         }
         htmlsource += '</body></html>';
+
+        htmlsource = `<center><h1>PASS: ${numPassed}</h1><h1>FAIL: ${numFailed}</h1></center>` + htmlsource;
+        let header = '<html><head><style>'
+        header += '*{padding: 5;margin: 5;}.fit {max-width: 100%;max-height: 100%;}.center {display: block;margin: auto;}';
+        header += '</style></head><body>';
+        header += '<script> function toggleShow(id) {var x = document.getElementById(id);if (x.style.display === "none") {x.style.display = "block";} else {x.style.display = "none";}} </script>';
+        htmlsource = header + htmlsource;
 
         const openFile = function() {
             open('./reports/report.html');
