@@ -128,10 +128,10 @@ module.exports = function (locator) {
     const waitFor = function (extractInfo, matchFunc, expectedText) {
         return new Promise((resolve, reject) => {
             const waitPromise = new Promise((resolve, reject) => {
-                var start = new Date();
+                const start = new Date();
                 let endCheck = false;
                 const checkTextFunction = function (toPrint) {
-                    var end = new Date() - start;
+                    const end = new Date() - start;
                     if (end / 1000 > 3) endCheck = true;
                     if (endCheck) return;
 
@@ -148,7 +148,7 @@ module.exports = function (locator) {
                       })
                       .catch(checkTextFunction);
 
-                }
+                };
 
                 checkTextFunction("START");
             });
@@ -163,7 +163,7 @@ module.exports = function (locator) {
               });
         });
 
-    }
+    };
 
     myElement.waitUntil =
       {
@@ -213,7 +213,7 @@ module.exports = function (locator) {
                   }, text);
               }
           }
-      }
+      };
 
 
     return myElement;
