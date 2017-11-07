@@ -1,6 +1,6 @@
 const dataTable = function(table) {
   this.table = table;
-}
+};
 
 dataTable.prototype.hashes = function() {
   const keys = this.table[0];

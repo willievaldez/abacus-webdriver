@@ -8,7 +8,7 @@ const writeJson = function(conglomeratedReport, cb) {
         finalReport.push.apply(finalReport, singleRunner);
     }
     fs.writeFile('./reports/report.json', JSON.stringify(finalReport),cb);
-}
+};
 
 
 module.exports = function(conglomeratedReport, callback) {
