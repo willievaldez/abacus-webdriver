@@ -95,10 +95,6 @@ module.exports = function (locator) {
                       var end = new Date() - start;
                       if(end / 1000 > 3) resolve('Looks like your element has the zoomies');
                       driver.findElement(myElement.locator).getLocation().then(({x, y}) => {
-                          console.log("_______");
-                          console.log(`Current: (${location.x}, ${location.y})`);
-                          console.log(`New: (${x}, ${y})`);
-                          console.log("_______");
                           if (location.x === x && location.y === y) {
                               streak++;
                               if(streak >= 5) resolve();
