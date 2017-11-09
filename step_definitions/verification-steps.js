@@ -2,7 +2,7 @@ module.exports = ({Then}) => {
 
     Then(/^user is taken to the "([^"]*)" page$/, (pageURI, next) => {
         global.pageID = pageURI;
-        driver.wait(until.urlMatches(pageMap[global.pageID].URL), 5000, "User is never redirected")
+        driver.wait(until.urlMatches(pageMap[global.pageID].URL), 15000, "User is never redirected")
           .catch((err) => {
               return err;
           })

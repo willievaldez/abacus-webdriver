@@ -1,6 +1,6 @@
 {
-  "name": "cucumber-webdriver-js",
-  "version": "1.0.13",
+  "name": "abacus-webdriver",
+  "version": "1.0.14",
   "description": "",
   "main": "exports.js",
   "dependencies": {
