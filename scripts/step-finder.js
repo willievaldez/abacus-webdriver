@@ -1,6 +1,6 @@
 const readDir = require('./directory-reader');
 
-module.exports = function(dir) {
+module.exports = function() {
   const stepDefs = [];
 
   // SP stands for step parser
@@ -23,7 +23,7 @@ module.exports = function(dir) {
   verificationSteps(supportCode);
 
   return new Promise((res, rej)=>{
-    readDir(dir, /^(.*)-steps.js$/).then(function(stepDefinitionFiles) {
+    readDir(process.env.CUCUMBER_STEP_DEFINITION_DIRECTORY, /^(.*)-steps.js$/).then(function(stepDefinitionFiles) {
       let readFiles = 0;
       stepDefinitionFiles.forEach((stepDefFilepath)=>{
         const stepsToParse = require("../../."+stepDefFilepath);

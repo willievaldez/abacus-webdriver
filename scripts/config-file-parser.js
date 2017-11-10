@@ -9,7 +9,7 @@ const registerVariables = function registerVariables(jsonObject, keyName) {
     const objKeys = Object.keys(jsonObject);
     for(let i = 0; i < objKeys.length; i++) {
         const objVal = jsonObject[objKeys[i]];
-        if (!process.env.hasOwnProperty(objKeys[i])) {
+        if (!process.env.hasOwnProperty(`${keyName}${objKeys[i].toUpperCase()}`)) {
             if (Array.isArray(objVal)) {
                 process.env[`${keyName}${objKeys[i].toUpperCase()}`] = JSON.stringify(objVal);
             }
@@ -23,13 +23,30 @@ const registerVariables = function registerVariables(jsonObject, keyName) {
     }
 };
 
-module.exports = function(){
-    return new Promise((resolve,reject) => {
-        readDir('./config/', /^(.*).json$/).then(function (jsonFiles) {
-            for(let i = 0; i < jsonFiles.length; i++) {
-                registerVariables(require(`../../.${jsonFiles[i]}`), '');
-            }
-            resolve();
-        });
-    });
+module.exports = function(config){
+    if(config){
+        if (config.substring(0,2) !== './') config = `./${config}`;
+    }
+    else {
+        config = './abacus-conf.json';
+    }
+    registerVariables(require(`../../.${config}`), '');
+
+    // If the user missed any required variables, supply the default variables
+    registerVariables({
+        "cucumber": {
+            "feature_directory": "./features/",
+            "page_object_directory":"./page_objects/",
+            "step_definition_directory":"./step_definitions/",
+            "hook_directory":"./hooks/",
+            "inclusive_tags": [],
+            "exclusive_tags": [],
+            "step_timeout": "20",
+            "redirect_timeout":"10"
+        },
+        "selenium": {
+            "browser_name": "chrome",
+            "browser_instances":"1"
+        }
+    },'');
 };

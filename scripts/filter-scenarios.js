@@ -1,7 +1,10 @@
 const gatherFeatures = require('./gherkin-parser');
 const rvg = require('./random-value-generator');
 
-const shouldIncludeScenario = function (inclusive, exclusive, scenario) {
+const shouldIncludeScenario = function (scenario) {
+    const inclusive = JSON.parse(process.env.CUCUMBER_INCLUSIVE_TAGS);
+    const exclusive = JSON.parse(process.env.CUCUMBER_EXCLUSIVE_TAGS);
+
     for (let i = 0; i < inclusive.length; i++) {
         if (scenario.tags.includes(inclusive[i])) {
             if (exclusive.length === 0) return true;
@@ -100,9 +103,9 @@ const replaceKeyValues = function (scenario) {
     }
 };
 
-const filterScenarios = function (params) {
+const filterScenarios = function () {
     return new Promise((res, rej) => {
-        gatherFeatures(params.featureDir).then((features) => {
+        gatherFeatures().then((features) => {
             const scenariosToExecute = [];
             let parsedFeatures = 0;
             features.forEach((feature) => {
@@ -112,7 +115,7 @@ const filterScenarios = function (params) {
 
                     parsedScenarios++;
                     if (scenario.type === "Scenario") {
-                        if (shouldIncludeScenario(params.inclusiveTags, params.exclusiveTags, scenario)) {
+                        if (shouldIncludeScenario(scenario)) {
                             replaceKeyValues(scenario);
                             scenariosToExecute.push(scenario);
 
@@ -123,7 +126,7 @@ const filterScenarios = function (params) {
                         const scenarios = constructScenariosFromOutline(scenario);
                         let convertedScenarios = 0;
                         scenarios.forEach((constructedScenario) => {
-                            if (shouldIncludeScenario(params.inclusiveTags, params.exclusiveTags, constructedScenario)) {
+                            if (shouldIncludeScenario(constructedScenario)) {
                                 replaceKeyValues(constructedScenario);
                                 scenariosToExecute.push(constructedScenario);
                             }

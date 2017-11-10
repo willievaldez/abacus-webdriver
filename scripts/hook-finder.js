@@ -24,8 +24,7 @@ const runHooks = function(hookType, callback) {
     runHook();
 };
 
-const gatherHooks = function (dir) {
-
+const gatherHooks = function () {
 
     const supportCode = {
         Init: function (hook) {
@@ -49,7 +48,7 @@ const gatherHooks = function (dir) {
     };
 
     return new Promise((res, rej) => {
-        readDir(dir, /^(.*)-hooks.js$/).then(function (hookFiles) {
+        readDir(process.env.CUCUMBER_HOOK_DIRECTORY, /^(.*)-hooks.js$/).then(function (hookFiles) {
             if (hookFiles.length === 0) res([]);
             let readFiles = 0;
             hookFiles.forEach((hookFilepath) => {

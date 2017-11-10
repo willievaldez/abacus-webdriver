@@ -105,10 +105,10 @@ const parseFeatureFile = function(filename) {
   });
 };
 
-module.exports = function(dir){
+module.exports = function(){
   return new Promise((res, rej)=>{
     const parsedFeatureArray = [];
-    readDir(dir, /^(.*).feature$/).then((files)=>{
+    readDir(process.env.CUCUMBER_FEATURE_DIRECTORY, /^(.*).feature$/).then((files)=>{
       files.forEach((filename)=>{
         parseFeatureFile(filename).then((parsedFeature)=>{
           parsedFeatureArray.push(parsedFeature);
