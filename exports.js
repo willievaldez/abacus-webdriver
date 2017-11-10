@@ -1,4 +1,4 @@
 module.exports = {
-  PageObject: require(`${__dirname}/models/page-object`),
-  RVG: require(`${__dirname}/lib/random-value-generator`)
+  PageObject: require('./models/page-object'),
+  RVG: require('./scripts/random-value-generator')
 };

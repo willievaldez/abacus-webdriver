@@ -1,5 +1,5 @@
-const gatherFeatures = require(`${__dirname}/gherkin-parser`);
-const rvg = require(`${__dirname}/random-value-generator`);
+const gatherFeatures = require('./gherkin-parser');
+const rvg = require('./random-value-generator');
 
 const shouldIncludeScenario = function (inclusive, exclusive, scenario) {
     for (let i = 0; i < inclusive.length; i++) {

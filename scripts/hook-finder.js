@@ -1,4 +1,4 @@
-const readDir = require(`${__dirname}/scripts`).readDirectory;
+const readDir = require('./directory-reader');
 
 const hooks = {
     init: [],

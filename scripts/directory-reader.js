@@ -5,26 +5,23 @@ const readDirectory = function (dir, fileRegex) {
     // Recursive function that takes in a file directory and returns all files that match fileRegex
     // if an object in the directory is a directory itself, call readDir on that directory
     const readDir = function (dir, level) {
-        // console.log(`Reading ${dir} level ${level}`);
         let filesFound = [];
         const readDirectories = {};
         let filesRead = 0;
         return new Promise((res, rej) => {
             readDirectories[dir] = false;
             fs.readdir(dir, (err, files) => {
-                if (err) console.log(err);
+                if (err) throw err;
                 if (files.length === 0) {
                     readDirectories[dir] = true;
                     return res([]);
                 }
 
-                // This function concatinates the inputted argument to the filesArray and checks if all subdirectories have been read
+                // This function concatenates the inputted argument to the filesArray and checks if all subdirectories have been read
                 const checkEndCase = function (filesArray) {
                     filesFound = filesFound.concat(filesArray);
                     if (filesRead === files.length) {
                         readDirectories[dir] = true;
-                        // if(level === 0)
-                        //     console.log(readDirectories);
                         let returnFromFunc = true;
                         const directories = Object.keys(readDirectories);
                         for (let i = 0; i < directories.length; i++) {
@@ -39,16 +36,13 @@ const readDirectory = function (dir, fileRegex) {
                 files.forEach((file) => {
                     fs.lstat(`${dir}${file}`, (err, stats) => {
                         filesRead++;
-                        // console.log('\t'+`${dir}${file}`);
 
-                        if (err) return console.log(err);
+                        if (err) throw err;
                         //if the object is a directory, call readDir on it
                         else if (stats.isDirectory()) {
                             readDirectories[`${dir}${file}/`] = false;
                             readDir(`${dir}${file}/`, level + 1).then((readFiles) => {
                                 readDirectories[`${dir}${file}/`] = true;
-                                // if(level === 0)
-                                //     console.log("Thenning from readDir");
                                 checkEndCase(readFiles);
                             });
                         }
@@ -67,4 +61,4 @@ const readDirectory = function (dir, fileRegex) {
     return readDir(dir, 0);
 };
 
-module.exports = {readDirectory};
+module.exports = readDirectory;
