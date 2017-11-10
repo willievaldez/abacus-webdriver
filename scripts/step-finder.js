@@ -26,7 +26,7 @@ module.exports = function() {
     readDir(process.env.CUCUMBER_STEP_DEFINITION_DIRECTORY, /^(.*)-steps.js$/).then(function(stepDefinitionFiles) {
       let readFiles = 0;
       stepDefinitionFiles.forEach((stepDefFilepath)=>{
-        const stepsToParse = require("../../."+stepDefFilepath);
+        const stepsToParse = require(`${process.env.PWD}/${stepDefFilepath}`);
         stepsToParse(supportCode);
         readFiles++;
         if(readFiles === stepDefinitionFiles.length) {

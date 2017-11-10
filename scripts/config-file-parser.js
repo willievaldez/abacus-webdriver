@@ -1,5 +1,3 @@
-const readDir = require('./directory-reader');
-
 /**
  * Register Variables in NODE_ENV process variables.
  * @param {Object} jsonObject.
@@ -30,7 +28,7 @@ module.exports = function(config){
     else {
         config = './abacus-conf.json';
     }
-    registerVariables(require(`../../.${config}`), '');
+    registerVariables(require(`${process.env.PWD}/${config}`), '');
 
     // If the user missed any required variables, supply the default variables
     registerVariables({

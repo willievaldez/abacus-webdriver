@@ -52,7 +52,7 @@ const gatherHooks = function () {
             if (hookFiles.length === 0) res([]);
             let readFiles = 0;
             hookFiles.forEach((hookFilepath) => {
-                const hooksToParse = require("../../." + hookFilepath);
+                const hooksToParse = require(`${process.env.PWD}/${hookFilepath}`);
                 hooksToParse(supportCode);
                 readFiles++;
                 if (readFiles === hookFiles.length) {
