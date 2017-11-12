@@ -19,7 +19,7 @@ PageObject.prototype.waitForUrlChange = function () {
           return newUrl !== url;
         });
       }, 5000).catch(function() {
-        reject(`Browser never navigated away from ${newUrl}`);
+        reject(new Error(`Browser never navigated away from ${newUrl}`));
       }).then(function() {
         resolve(newUrl);
       });
@@ -37,7 +37,7 @@ PageObject.prototype.urlIsNot = function (url) {
         return newUrl !== url;
       });
     }, 5000).catch(function() {
-      reject(`Browser never navigated away from ${url}`);
+      reject(new Error(`Browser never navigated away from ${url}`));
     }).then(function() {
       resolve(newUrl);
     });

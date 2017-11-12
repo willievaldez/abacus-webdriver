@@ -2,7 +2,8 @@ module.exports = ({Then}) => {
 
     Then(/^user is taken to the "([^"]*)" page$/, (pageURI, next) => {
         global.pageID = pageURI;
-        driver.wait(until.urlMatches(pageMap[global.pageID].URL), 9000, "User is never redirected")
+        if (!pageMap[global.pageID]) return next(new Error(`Page Object with name ${pageURI} is not defined`))
+        driver.wait(until.urlMatches(pageMap[global.pageID].URL), 9000, `URL never matched ${pageMap[global.pageID].URL}`)
           .catch((err) => {
               return err;
           })
@@ -14,14 +15,6 @@ module.exports = ({Then}) => {
                   next();
           });
     });
-
-    // Then(/^the "([^"]*)" element value contains "([^"]*)"$/, (buttonText, text, next) => {
-    //   const buttonID = buttonText.replace(/ /g, '_').toUpperCase();
-    //
-    //   browser.wait(pageMap[global.pageID][buttonID].isPresent()).then(() => {
-    //     expect(pageMap[global.pageID][buttonID].getAttribute('value')).to.eventually.contain(text).and.notify(next);
-    //   });
-    // });
 
     Then(/^the "([^"]*)" element (value|text) (is|contains|matches) "([^"]*)"$/, (labelText, valOrText, matchType, text, next) => {
         const labelID = labelText.replace(/ /g, '_').toUpperCase();
@@ -59,74 +52,60 @@ module.exports = ({Then}) => {
     //     });
     //
     // });
-    //
-    // Then(/^the "([^"]*)" drop down displays "([^"]*)"$/, (el, text, next) => {
-    //   const labelID = el.replace(/ /g, '_').toUpperCase();
-    //
-    //   let expectedString = text;
-    //   if (text.match(/(?:\*)/)) expectedString = localStorage.getItem(text.match(/\*([^*]*)\*/)[1]);
-    //   const select = pageMap[global.pageID][labelID];
-    //   browser.wait(select.isPresent()).then(() => {
-    //     select.getAttribute('value').then((i) => {
-    //       expect(select.element(by.css(`option[value="${i}"]`)).getText()).to.eventually.equal(expectedString)
-    //         .and.notify(next);
-    //     });
-    //   });
-    //
-    // });
-    //
-    // Then(/^the "([^"]*)" drop down only contains the following options:$/, (el, table, next) => {
-    //   const dropDownID = el.replace(/ /g, '_').toUpperCase();
-    //   const select = pageMap[global.pageID][dropDownID];
-    //
-    //
-    //   const optionsPromise = new Promise((res, rej) => {
-    //     select.all(by.css('option')).then((selections) => {
-    //       const optionsArray = [];
-    //       const numSelections = selections.length;
-    //       selections.forEach((selection, i) => {
-    //         selection.getText().then((option) => {
-    //           optionsArray.push(option);
-    //           if (i === numSelections - 1) res(optionsArray);
-    //         });
-    //       });
-    //     });
-    //   });
-    //
-    //   optionsPromise.then((options) => {
-    //     const numRows = table.raw().length;
-    //
-    //     table.raw().forEach((row, i) => {
-    //       let expectedString = row[0];
-    //       if (expectedString.match(/(?:\*)/)) expectedString = localStorage.getItem(expectedString.match(/\*([^*]*)\*/)[1]);
-    //       if (expectedString !== '') {
-    //         const ind = options.indexOf(expectedString);
-    //         expect(ind).to.not.equal(-1);
-    //         options.splice(ind, 1);
-    //       }
-    //       if (i === numRows - 1) {
-    //         expect(options.length).to.equal(1);
-    //         next();
-    //       }
-    //     });
-    //   });
-    //
-    // });
-    //
-    // Then(/^the "([^"]*)" drop down is non-empty$/, (el, next) => {
-    //   const dropDownID = el.replace(/ /g, '_').toUpperCase();
-    //   const select = pageMap[global.pageID][dropDownID];
-    //
-    //   const optionsPromise = new Promise((res, rej) => {
-    //     select.all(by.css('option')).then((selections) => {
-    //       const numSelections = selections.length;
-    //       res(numSelections > 1);
-    //     });
-    //   });
-    //
-    //   expect(optionsPromise).to.eventually.be.ok.and.notify(next);
-    // });
-    //
+
+
+    Then(/^the "([^"]*)" drop down only contains the following options:$/, (el, table, next) => {
+        const dropDownID = el.replace(/ /g, '_').toUpperCase();
+        const select = pageMap[global.pageID][dropDownID];
+
+        const optionsPromise = new Promise((res, rej) => {
+            select.findElements(by.css('option')).then((selections) => {
+                const optionsArray = [];
+                selections.forEach((selection) => {
+                    selection.getText().then((option) => {
+                        optionsArray.push(option);
+                        if (optionsArray.length === selections.length) res(optionsArray);
+                    });
+                });
+            });
+        });
+
+        optionsPromise.then((options) => {
+            const numRows = table.raw().length;
+            let cont = true;
+            table.raw().forEach((row, i) => {
+                if (!cont) return;
+                if (row[0] !== '') {
+                    const ind = options.indexOf(row[0]);
+                    if (ind === -1) {
+                        cont = false;
+                        return next(new Error(`${row[0]} is not an option`));
+                    }
+                    options.splice(ind, 1);
+                }
+                if (i === numRows - 1) {
+                    if(options.length !== 1) next(new Error(`${options} are not options`));
+                    else next();
+                }
+            });
+        });
+
+    });
+
+    Then(/^the "([^"]*)" drop down is non-empty$/, (el, next) => {
+        const dropDownID = el.replace(/ /g, '_').toUpperCase();
+        const select = pageMap[global.pageID][dropDownID];
+
+        const optionsPromise = new Promise((res, rej) => {
+            select.findElements(by.css('option')).then((selections) => {
+                const numSelections = selections.length;
+                res(numSelections > 1);
+            });
+        });
+
+        expect(optionsPromise).to.eventually.be.ok.and.notify(next);
+    });
+
     // Then(/^the "([^"]*)" text field is non-empty$/, (buttonText, next) => {
     //   const buttonID = buttonText.replace(/ /g, '_').toUpperCase();
     //   browser.wait(pageMap[global.pageID][buttonID].isPresent()).then(() => {
@@ -145,22 +124,24 @@ module.exports = ({Then}) => {
     //   });
     // });
 
-    Then(/^the "([^"]*)" element is (|not) present$/, (elementText, yorn, next) => {
+    Then(/^the "([^"]*)" element (is|is not) present$/, (elementText, yorn, next) => {
         const elementID = elementText.replace(/ /g, '_').toUpperCase();
 
-        driver.wait(until.elementLocated(pageMap[global.pageID][elementID].locator), 5000)
+        driver.wait(pageMap[global.pageID][elementID].isDisplayed(), 5000)
           .catch((err) => {
-            return err;
+              next(err);
           })
-          .then((result) =>{
-            if(yorn === 'not') {
-                if (result === true) next(new Error("Element is present"));
-                else next();
-            }
-            else {
-                if (result === true) next();
-                else next(result);
-            }
+          .then((result) => {
+              if (yorn === 'is not') {
+                  if (result === true) next(new Error(`${elementID} Element is displayed`));
+                  else next();
+              }
+              else {
+                  if (result === true) next();
+                  else {
+                      next(new Error(`${elementID} Element is not displayed`));
+                  }
+              }
           });
     });
 

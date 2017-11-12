@@ -3,7 +3,7 @@ module.exports = function (locator) {
     myElement.locator = locator;
 
     myElement.click = function () {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM")
+        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .then(function () {
               const elementToClick = driver.findElement(myElement.locator);
               driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
@@ -15,7 +15,7 @@ module.exports = function (locator) {
     };
 
     myElement.sendKeys = function (keys) {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM")
+        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .then(function () {
               const elementToClick = driver.findElement(myElement.locator);
               driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
@@ -27,7 +27,7 @@ module.exports = function (locator) {
     };
 
     myElement.clear = function () {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM")
+        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .then(function () {
               const elementToClick = driver.findElement(myElement.locator);
               driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
@@ -40,7 +40,7 @@ module.exports = function (locator) {
 
     // // // // // These functions expose the user to raw webdriver, which can lead to complete execution failure
     myElement.findElements = function (byLocator) {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM")
+        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .then(function () {
               const parentElement = driver.findElement(myElement.locator);
               return parentElement.findElements(byLocator);
@@ -51,7 +51,7 @@ module.exports = function (locator) {
     };
 
     myElement.findElement = function (byLocator) {
-        driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM")
+        driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .catch(function (err) {
               return err;
           });
@@ -61,7 +61,8 @@ module.exports = function (locator) {
     // // // // //
 
     myElement.getText = function () {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM").then(function () {
+        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
+          .then(function () {
             const elementToRead = driver.findElement(myElement.locator);
             return driver.wait(until.elementIsVisible(elementToRead)).then(function () {
                 return elementToRead.getText();
@@ -71,7 +72,7 @@ module.exports = function (locator) {
 
     myElement.isDisplayed = function () {
         return new Promise((resolve, reject) => {
-            return driver.wait(until.elementLocated(myElement.locator), 2000, "Element not in DOM")
+            return driver.wait(until.elementLocated(myElement.locator), 2000, `Element ${myElement.locator} not in DOM`)
               .then(() => {
                   driver.findElement(myElement.locator).isDisplayed().then((isDisplayed) => {
                       resolve(isDisplayed);
@@ -88,7 +89,7 @@ module.exports = function (locator) {
         return new Promise((resolve, reject) => {
             let location = {x: -1, y: -1};
             let streak = 0;
-            driver.wait(until.elementLocated(myElement.locator), 5000, "Element not in DOM")
+            driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
               .then(() => {
                   var start = new Date();
                   const compareLocation = function () {
@@ -189,21 +190,51 @@ module.exports = function (locator) {
           value: {
               is: (text) => {
                   return waitFor((testElement) => {
-                      return testElement.getAttribute('value');
+                      return new Promise((resolve, reject) => {
+                          testElement.getAttribute('value').then((val) => {
+                              testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
+                                  resolve(data);
+                              }).catch((err)=>{
+                                  reject(err);
+                              });
+                          }).catch((err)=>{
+                              reject(err);
+                          });
+                      });
                   }, (actual, expected) => {
                       return actual === expected;
                   }, text);
               },
               matches: (text) => {
                   return waitFor((testElement) => {
-                      return testElement.getAttribute('value');
+                      return new Promise((resolve, reject) => {
+                          testElement.getAttribute('value').then((val) => {
+                              testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
+                                  resolve(data);
+                              }).catch((err)=>{
+                                  reject(err);
+                              });
+                          }).catch((err)=>{
+                              reject(err);
+                          });
+                      });
                   }, (actual, expected) => {
                       return expected.test(actual);
                   }, text);
               },
               contains: (text) => {
                   return waitFor((testElement) => {
-                      return testElement.getAttribute('value');
+                      return new Promise((resolve, reject) => {
+                          testElement.getAttribute('value').then((val) => {
+                              testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
+                                  resolve(data);
+                              }).catch((err)=>{
+                                  reject(err);
+                              });
+                          }).catch((err)=>{
+                              reject(err);
+                          });
+                      });
                   }, (actual, expected) => {
                       return actual.indexOf(expected) > -1;
                   }, text);
