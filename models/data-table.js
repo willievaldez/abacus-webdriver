@@ -1,4 +1,16 @@
 const dataTable = function(table) {
+  for(let i = 0; i < table.length; i++) {
+    const row = table[i];
+    for(let j = 0; j < row.length; j++) {
+        if (/{([^}]*)}/.test(row[j])) {
+            const exampleReplacements = row[j].match(/{([^}]*)}/g);
+            for (let k = 0; k < exampleReplacements.length; k++) {
+                const replacement = exampleReplacements[k];
+                row[j] = row[j].replace(replacement,global[replacement.substring(1,replacement.length-1)]);
+            }
+        }
+    }
+  }
   this.table = table;
 };
 

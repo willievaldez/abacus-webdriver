@@ -31,14 +31,8 @@ module.exports = ({Given, When, Then}) => {
     When(/^user enters "(.*)" into the "(.*)" field$/, (text, textField, next) => {
         const fieldID = textField.replace(/ /g, '_').toUpperCase();
 
-        let expectedString = text;
-
-        if (text.match(/(?:#)/)) {
-            expectedString = process.env[text.match(/#([^#]*)#/)[1]];
-        }
-
         pageMap[global.pageID][fieldID].clear();
-        pageMap[global.pageID][fieldID].sendKeys(expectedString).then(next);
+        pageMap[global.pageID][fieldID].sendKeys(text).then(next);
     });
 
     When(/^user selects "(.*)" from the "(.*)" drop down$/, (text, buttonText, next) => {

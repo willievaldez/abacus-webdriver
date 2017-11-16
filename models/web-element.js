@@ -176,7 +176,7 @@ module.exports = function (locator) {
                   return waitFor((testElement) => {
                       return testElement.getText();
                   }, (actual, expected) => {
-                      return expected.test(actual);
+                      return new RegExp(expected).test(actual);
                   }, text);
               },
               contains: (text) => {

@@ -22,9 +22,15 @@ class GeneratedValues {
           const max = functionToCall.match(/between([0-9]{2})and([0-9]{2})/)[2];
           functionResult = this.randomBirthdayWithinRange(min, max);
         } else {
-          const funcArgs = functionToCall.match(/(\D*)(\d*)/);
-          if(!this[funcArgs[1]]) throw new Error(`${funcArgs[1]} is not a random value generator function`);
-          functionResult = this[funcArgs[1]](funcArgs[2]);
+          if (/(.*)_(\d*)/.test(functionToCall)) {
+              const funcArgs = functionToCall.match(/(.*)_(\d*)/);
+              if(!this[funcArgs[1]]) throw new Error(`${funcArgs[1]} is not a random value generator function`);
+              functionResult = this[funcArgs[1]](funcArgs[2]);
+          }
+          else {
+              if(!this[functionToCall]) throw new Error(`${functionToCall} is not a random value generator function`);
+            functionResult = this[functionToCall]();
+          }
         }
         newString = newString.replace(replacement,functionResult);
       }
@@ -54,7 +60,7 @@ class GeneratedValues {
   randomString(num) {
     const val = `${chance.word({ length: 7 })}${Math.floor(Math.random() * 10000)}`;
     let storageString = 'randomString';
-    if(num) storageString = storageString + num;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = val;
     return val;
   }
@@ -66,7 +72,7 @@ class GeneratedValues {
   randomCode(num) {
     const val =(`${chance.word({ length: 6 })}${Math.floor(Math.random() * 10000)}`).toUpperCase();
     let storageString = 'randomCode';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = val;
     return val;
   }
@@ -81,7 +87,7 @@ class GeneratedValues {
       max: Math.pow(10, 14) - 1  // eslint-disable-line no-restricted-properties
     })}`);
     let storageString = 'randomDl';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = dl;
     return dl;
   }
@@ -93,7 +99,7 @@ class GeneratedValues {
   randomEmailAddress(num) {
     const email = chance.email();
     let storageString = 'randomEmailAddress';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = email;
     return email;
   }
@@ -105,7 +111,7 @@ class GeneratedValues {
   randomFirstName(num) {
     const firstName = chance.first();
     let storageString = 'randomFirstName';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = firstName;
     return firstName;
   }
@@ -117,7 +123,7 @@ class GeneratedValues {
   randomLastName(num) {
     const lastName = chance.last();
     let storageString = 'randomLastName';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = lastName;
     return lastName;
   }
@@ -130,7 +136,7 @@ class GeneratedValues {
     const nvraArray = ['24', '33', '49', '54', '76', '82', '99', 'P', 'FP'];
     const nvra = nvraArray[Math.floor(Math.random() * nvraArray.length)];
     let storageString = 'randomNvra';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = nvra;
     return nvra;
   }
@@ -154,7 +160,7 @@ class GeneratedValues {
     ];
     const party = partyArray[Math.floor(Math.random() * partyArray.length)];
     let storageString = 'randomParty';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = party;
     return party;
   }
@@ -166,7 +172,7 @@ class GeneratedValues {
   randomSsn(num) {
     const ssn = chance.ssn();
     let storageString = 'randomSsn';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = ssn;
     return ssn;
   }
@@ -178,7 +184,7 @@ class GeneratedValues {
   randomLastFourSsn(num) {
     const ssn = chance.ssn({ ssnFour: true });
     let storageString = 'randomLastFourSsn';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = ssn;
     return ssn;
   }
@@ -193,7 +199,7 @@ class GeneratedValues {
       gender = 'Male';
     }
     let storageString = 'randomGender';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = gender;
     return gender;
   }
@@ -208,7 +214,7 @@ class GeneratedValues {
     const randYear = chance.integer({ min: yearToday - 100, max: yearToday - 18 });
     const dob = chance.date({ string: true, year: randYear });
     let storageString = 'dobOver18';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = dob;
     return dob;
   }
@@ -222,7 +228,7 @@ class GeneratedValues {
     birthday.add(chance.integer({ min: 1, max: 21 }), 'days');
     const dob = birthday.format('L');
     let storageString = 'dob18Within21Days';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = dob;
     return dob;
   }
@@ -236,7 +242,7 @@ class GeneratedValues {
     birthday.subtract(chance.integer({ min: 0, max: 344 }), 'days');
     const dob = birthday.format('L');
     let storageString = 'dob18After21Days';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = dob;
     return dob;
   }
@@ -252,7 +258,7 @@ class GeneratedValues {
     birthday.subtract(chance.integer({ min: 0, max: (365 * (max - min)) - 1 }), 'days');
     const dob = birthday.format('L');
     let storageString = 'dobWithinRange';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = dob;
     return dob;
   }
@@ -282,7 +288,7 @@ class GeneratedValues {
     const randYear = chance.integer({ min: yearToday + 1, max: yearToday + 100 });
     const futureDate = chance.date({ string: true, year: randYear });
     let storageString = 'randomFutureDate';
-    if(num) storageString = `${storageString}${num}`;
+    if(num) storageString = `${storageString}_${num}`;
     this.storedValues[storageString] = futureDate;
     return futureDate;
   }

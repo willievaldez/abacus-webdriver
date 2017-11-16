@@ -43,7 +43,7 @@ module.exports = function(config){
             "redirect_timeout":"10"
         },
         "selenium": {
-            "browser_name": "chrome",
+            "browser": "chrome",
             "browser_instances":"1"
         }
     },'');
