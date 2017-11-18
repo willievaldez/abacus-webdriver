@@ -178,11 +178,11 @@ module.exports = ({Then}) => {
     //     expect(validateImages(elementID)).to.eventually.be.ok.and.notify(next);
     //   });
     // });
-    //
-    // Then(/^there are ([0-9]) open browser tabs$/, (numTabs, next) => {
-    //   browser.driver.getAllWindowHandles().then((handles) => {
-    //     expect(handles.length).to.equal(parseInt(numTabs, 10));
-    //     next();
-    //   });
-    // });
+
+    Then(/^there are ([0-9]) open browser tabs$/, (numTabs, next) => {
+      driver.getAllWindowHandles().then((handles) => {
+        expect(handles.length).to.equal(parseInt(numTabs, 10));
+        next();
+      });
+    });
 };

@@ -67,7 +67,10 @@ module.exports = function (locator) {
             return driver.wait(until.elementIsVisible(elementToRead)).then(function () {
                 return elementToRead.getText();
             });
-        });
+        })
+          .catch(function (err) {
+              return err;
+          });
     };
 
     myElement.isDisplayed = function () {
@@ -128,29 +131,31 @@ module.exports = function (locator) {
                 const start = new Date();
                 let endCheck = false;
                 const checkTextFunction = function (toPrint) {
+                    // console.log(toPrint);
                     const end = new Date() - start;
                     if (end / 1000 > 3) endCheck = true;
                     if (endCheck) return;
+                    driver.wait(until.elementLocated(myElement.locator), 4000).then(() => {
+                        const testElement = driver.findElement(myElement.locator);
+                        testElement.catch(checkTextFunction);
 
-                    const testElement = driver.findElement(myElement.locator);
-                    testElement.catch(checkTextFunction);
-
-                    extractInfo(testElement)
-                      .then((text) => {
-                          if (matchFunc(text, expectedText)) {
-                              endCheck = true;
-                              resolve(true);
-                          }
-                          else checkTextFunction("Text was" + text);
-                      })
+                        extractInfo(testElement)
+                          .then((text) => {
+                              if (matchFunc(text, expectedText)) {
+                                  endCheck = true;
+                                  resolve(true);
+                              }
+                              else checkTextFunction("Text was" + text);
+                          })
+                          .catch(checkTextFunction);
+                    })
                       .catch(checkTextFunction);
-
                 };
 
                 checkTextFunction("START");
             });
 
-            driver.wait(waitPromise, 5000, `Text never matched "${expectedText}"`)
+            driver.wait(waitPromise, 6000, `Text never matched "${expectedText}"`)
               .catch((err) => {
                   return err;
               })

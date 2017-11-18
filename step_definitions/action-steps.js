@@ -40,6 +40,7 @@ module.exports = ({Given, When, Then}) => {
         pageMap[global.pageID][buttonID].click();
         pageMap[global.pageID][buttonID].findElements(by.xpath(`*[normalize-space(text()) = "${text}" and not(contains(@style,'display') and contains(@style,'none'))]`)).then((elements) => {
             const toClick = elements[elements.length - 1];
+            if(!toClick) return next(elements);
             toClick.click().then(next);
         });
     });
@@ -123,12 +124,7 @@ module.exports = ({Given, When, Then}) => {
     //   browser.driver.navigate().refresh();
     //   browser.sleep(1500).then(next);
     // });
-    //
-    // When(/^browser is set to (non|)angular$/, (torf) => {
-    //   if (torf === 'non') browser.ignoreSynchronization = true;
-    //   else browser.ignoreSynchronization = false;
-    // });
-    //
+    
     // When(/^user accepts confirmation dialog$/, (next) => {
     //   browser.switchTo().alert().then((alert) => {
     //     alert.accept().then(next);

@@ -20,7 +20,7 @@ class GeneratedValues {
         if (functionToCall.match(/between([0-9]{2})and([0-9]{2})/)) {
           const min = functionToCall.match(/between([0-9]{2})and([0-9]{2})/)[1];
           const max = functionToCall.match(/between([0-9]{2})and([0-9]{2})/)[2];
-          functionResult = this.randomBirthdayWithinRange(min, max);
+          functionResult = this.dobWithinRange(min, max);
         } else {
           if (/(.*)_(\d*)/.test(functionToCall)) {
               const funcArgs = functionToCall.match(/(.*)_(\d*)/);
