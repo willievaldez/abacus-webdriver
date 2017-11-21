@@ -2,8 +2,8 @@ module.exports = ({Then}) => {
 
     Then(/^user is taken to the "([^"]*)" page$/, (pageURI, next) => {
         global.pageID = pageURI;
-        if (!pageMap[global.pageID]) return next(new Error(`Page Object with name ${pageURI} is not defined`))
-        driver.wait(until.urlMatches(pageMap[global.pageID].URL), 9000, `URL never matched ${pageMap[global.pageID].URL}`)
+        if (!pageMap[global.pageID]) return next(new Error(`Page Object with name ${pageURI} is not defined`));
+        driver.wait(until.urlMatches(pageMap[global.pageID].URL), 10000, `URL never matched ${pageMap[global.pageID].URL}`)
           .catch((err) => {
               return err;
           })

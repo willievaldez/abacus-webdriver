@@ -73,6 +73,19 @@ module.exports = function (locator) {
           });
     };
 
+    myElement.getAttribute = function (attr) {
+        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
+          .then(function () {
+              const elementToRead = driver.findElement(myElement.locator);
+              return driver.wait(until.elementIsVisible(elementToRead)).then(function () {
+                  return elementToRead.getAttribute(attr);
+              });
+          })
+          .catch(function (err) {
+              return err;
+          });
+    };
+
     myElement.isDisplayed = function () {
         return new Promise((resolve, reject) => {
             return driver.wait(until.elementLocated(myElement.locator), 2000, `Element ${myElement.locator} not in DOM`)
@@ -127,42 +140,30 @@ module.exports = function (locator) {
     // expectedText = the text that the extracted info is compared to
     const waitFor = function (extractInfo, matchFunc, expectedText) {
         return new Promise((resolve, reject) => {
-            const waitPromise = new Promise((resolve, reject) => {
-                const start = new Date();
-                let endCheck = false;
-                const checkTextFunction = function (toPrint) {
-                    // console.log(toPrint);
-                    const end = new Date() - start;
-                    if (end / 1000 > 3) endCheck = true;
-                    if (endCheck) return;
-                    driver.wait(until.elementLocated(myElement.locator), 4000).then(() => {
-                        const testElement = driver.findElement(myElement.locator);
-                        testElement.catch(checkTextFunction);
+            const start = new Date();
+            let endCheck = false;
+            const checkTextFunction = function (toPrint) {
+                console.log(toPrint);
+                const end = new Date() - start;
+                if (end / 1000 > 10) endCheck = true;
+                if (endCheck) resolve(new Error(toPrint));
+                driver.wait(until.elementLocated(myElement.locator), 5000).then(() => {
+                    const testElement = driver.findElement(myElement.locator);
 
-                        extractInfo(testElement)
-                          .then((text) => {
-                              if (matchFunc(text, expectedText)) {
-                                  endCheck = true;
-                                  resolve(true);
-                              }
-                              else checkTextFunction("Text was" + text);
-                          })
-                          .catch(checkTextFunction);
-                    })
+                    extractInfo(testElement)
+                      .then((text) => {
+                          if (matchFunc(text, expectedText)) {
+                              endCheck = true;
+                              resolve();
+                          }
+                          else checkTextFunction("Text was " + text);
+                      })
                       .catch(checkTextFunction);
-                };
+                })
+                  .catch(checkTextFunction);
+            };
 
-                checkTextFunction("START");
-            });
-
-            driver.wait(waitPromise, 6000, `Text never matched "${expectedText}"`)
-              .catch((err) => {
-                  return err;
-              })
-              .then((result) => {
-                  if (result === true) resolve();
-                  else resolve(result);
-              });
+            checkTextFunction("Start");
         });
 
     };
