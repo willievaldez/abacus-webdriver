@@ -6,8 +6,14 @@ module.exports = function (locator) {
         return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .then(function () {
               const elementToClick = driver.findElement(myElement.locator);
-              driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
-              return elementToClick.click();
+              return driver.wait(until.elementIsVisible(elementToClick), 5000, `Element ${myElement.locator} not visible`)
+                .then(function() {
+                    driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
+                    return elementToClick.click();
+                })
+                .catch(function(err) {
+                    return err;
+                })
           })
           .catch(function (err) {
               return err;
@@ -18,8 +24,14 @@ module.exports = function (locator) {
         return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .then(function () {
               const elementToClick = driver.findElement(myElement.locator);
-              driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
-              return elementToClick.sendKeys(keys);
+              return driver.wait(until.elementIsVisible(elementToClick), 5000, `Element ${myElement.locator} not visible`)
+                .then(function() {
+                    driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
+                    return elementToClick.sendKeys(keys);
+                })
+                .catch(function(err) {
+                    return err;
+                })
           })
           .catch(function (err) {
               return err;
@@ -30,8 +42,14 @@ module.exports = function (locator) {
         return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .then(function () {
               const elementToClick = driver.findElement(myElement.locator);
-              driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
-              return elementToClick.clear();
+              return driver.wait(until.elementIsVisible(elementToClick), 5000, `Element ${myElement.locator} not visible`)
+                .then(function() {
+                    driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
+                    return elementToClick.clear();
+                })
+                .catch(function(err) {
+                    return err;
+                })
           })
           .catch(function (err) {
               return err;
@@ -63,11 +81,11 @@ module.exports = function (locator) {
     myElement.getText = function () {
         return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
           .then(function () {
-            const elementToRead = driver.findElement(myElement.locator);
-            return driver.wait(until.elementIsVisible(elementToRead)).then(function () {
-                return elementToRead.getText();
-            });
-        })
+              const elementToRead = driver.findElement(myElement.locator);
+              return driver.wait(until.elementIsVisible(elementToRead)).then(function () {
+                  return elementToRead.getText();
+              });
+          })
           .catch(function (err) {
               return err;
           });
@@ -143,7 +161,6 @@ module.exports = function (locator) {
             const start = new Date();
             let endCheck = false;
             const checkTextFunction = function (toPrint) {
-                console.log(toPrint);
                 const end = new Date() - start;
                 if (end / 1000 > 10) endCheck = true;
                 if (endCheck) resolve(new Error(toPrint));

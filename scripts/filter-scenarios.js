@@ -27,6 +27,7 @@ const constructScenariosFromOutline = function (scenario) {
             const newScenario = {
                 type: scenario.type,
                 title: scenario.title,
+                feature: scenario.feature,
                 tags: scenario.tags.concat(example.tags),
                 steps: JSON.parse(JSON.stringify(scenario.steps.slice())) // Make a copy
             };

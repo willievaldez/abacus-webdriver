@@ -26,8 +26,9 @@ const parseFeatureFile = function(filename) {
           currentObject = featureObject;
         }
         else if (/^Scenario(.*)$/.test(line)) {
-          featureObject.scenarios.push({});
-          currentObject = featureObject.scenarios[featureObject.scenarios.length - 1];
+          currentObject = {};
+          featureObject.scenarios.push(currentObject);
+          currentObject.feature = featureObject.title;
           const scenarioInfo = line.match(/^(.*):(.*)$/);
           currentObject.type = scenarioInfo[1].trim();
           currentObject.title = scenarioInfo[2].trim();

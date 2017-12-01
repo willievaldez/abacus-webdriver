@@ -37,12 +37,8 @@ module.exports = ({Given, When, Then}) => {
 
     When(/^user selects "(.*)" from the "(.*)" drop down$/, (text, buttonText, next) => {
         const buttonID = buttonText.replace(/ /g, '_').toUpperCase();
-        pageMap[global.pageID][buttonID].click();
-        pageMap[global.pageID][buttonID].findElements(by.xpath(`*[normalize-space(text()) = "${text}" and not(contains(@style,'display') and contains(@style,'none'))]`)).then((elements) => {
-            const toClick = elements[elements.length - 1];
-            if(!toClick) return next(elements);
-            toClick.click().then(next);
-        });
+        pageMap[global.pageID][buttonID].sendKeys(text).then(next);
+        // element(by.xpath(`//option[normalize-space()="${text}"]`)).click().then(next);
     });
 
 
@@ -55,12 +51,12 @@ module.exports = ({Given, When, Then}) => {
             try {
                 pageMap[global.pageID][fieldID].sendKeys(hash[keys[i]]).then((result) => {
                     if (result) {
-                        console.log(`\x1b[31m\t${keys[i]} -> ${hash[keys[i]]} \x1b[0m`);
+                        // console.log(`\x1b[31m\t${keys[i]} -> ${hash[keys[i]]} \x1b[0m`);
                         return next(result);
                     }
                     driver.actions().sendKeys(webdriver.Key.TAB).perform().then((result) => {
                         valuesEntered++;
-                        console.log(`\x1b[32m\t${keys[i]} -> ${hash[keys[i]]} \x1b[0m`);
+                        // console.log(`\x1b[32m\t${keys[i]} -> ${hash[keys[i]]} \x1b[0m`);
                         if (valuesEntered === keys.length) next();
                     });
                 });

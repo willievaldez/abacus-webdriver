@@ -1,7 +1,7 @@
 const dataTable = function(table) {
-  for(let i = 0; i < table.length; i++) {
+  for (let i = 0; i < table.length; i++) {
     const row = table[i];
-    for(let j = 0; j < row.length; j++) {
+    for (let j = 0; j < row.length; j++) {
         if (/{([^}]*)}/.test(row[j])) {
             const exampleReplacements = row[j].match(/{([^}]*)}/g);
             for (let k = 0; k < exampleReplacements.length; k++) {
@@ -40,6 +40,47 @@ dataTable.prototype.rowsHash = function() {
     hashObject[this.table[i][0]] = this.table[i][1];
   }
   return hashObject;
+
+};
+
+dataTable.format = function(table) {
+    if(!table) return '';
+
+    // transpose function
+    const transpose = function (oldTable) {
+        const newTable = [];
+        for (let i = 0; i < oldTable[0].length; i++) {
+            const colToRow = [];
+            for (let j = 0; j < oldTable.length; j++) {
+                colToRow.push(oldTable[j][i]);
+            }
+            newTable.push(colToRow);
+        }
+        return newTable;
+    }
+
+    const transposeTable = transpose(table);
+    for (let i = 0; i < transposeTable.length; i++) {
+        let maxEntry = '';
+        for (let j = 0; j < transposeTable[i].length; j++) {
+            if (transposeTable[i][j].length > maxEntry.length) maxEntry = transposeTable[i][j];
+        }
+        for (let j = 0; j < transposeTable[i].length; j++) {
+            const diff = maxEntry.length - transposeTable[i][j].length;
+            for (let k = 0; k < diff; k++) {
+                transposeTable[i][j] += ' ';
+            }
+        }
+    }
+    
+    let stringTable = JSON.stringify(transpose(transposeTable));
+    stringTable = stringTable.replace( /\[\[/g ,'\t| ');
+    stringTable = stringTable.replace( /],\[/g ,' |\n\t| ');
+    stringTable = stringTable.replace( /]]/g ,' |');
+    stringTable = stringTable.replace( /,/g ,' | ');
+    stringTable = stringTable.replace( /"/g ,'');
+
+    return stringTable;
 
 };
 
