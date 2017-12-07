@@ -48,14 +48,14 @@ module.exports = function(conglomeratedReport, callback) {
                     color = 'green';
                     if (stepResults.status === undefined) color = '#e6e6e6';
                     else if (stepResults.status === 'Fail') color = 'red';
-                    featureHTML += `<div style="color:${color};">${stepResults.step}`;
-                    if (stepResults.table) htmlSource += `<pre>${dataTableFormat(stepResults.table)}</pre>`;
+                    featureHTML += `<div style="color:${color};">${stepResults.keyword} ${stepResults.step}`;
+                    if (stepResults.table) featureHTML += `<pre>${dataTable.format(stepResults.table)}</pre>`;
                     featureHTML += '</div>';
                     if (stepResults.status === 'Fail') {
                         featureHTML += `<button onclick="toggleShow('${i}_${k}_${s}_img')"> Show/Hide Image </button>`;
                         featureHTML += `<button onclick="toggleShow('${i}_${k}_${s}_err')"> Show/Hide Error </button>`;
                         featureHTML += `<img id="${i}_${k}_${s}_img" style="display: none;" class="center fit" src="${stepResults.img}">`;
-                        featureHTML += `<pre id="${i}_${k}_${s}_err" style="display: none; color:${color};"><code>${stepResults.error}</code></pre>`;
+                        featureHTML += `<pre id="${i}_${k}_${s}_err" style="display: none; color:${color};"><code>${stepResults.error.message}</code></pre>`;
                     }
                 }
                 featureHTML += '</div>';

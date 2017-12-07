@@ -181,8 +181,8 @@ module.exports = ({Then}) => {
 
     Then(/^there are ([0-9]) open browser tabs$/, (numTabs, next) => {
       driver.getAllWindowHandles().then((handles) => {
-        expect(handles.length).to.equal(parseInt(numTabs, 10));
-        next();
+        if (handles.length != numTabs) next(new Error(`Expected ${numTabs} tabs, but got ${handles.length}`));
+        else next();
       });
     });
 };
