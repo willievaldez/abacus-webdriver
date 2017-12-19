@@ -59,7 +59,7 @@ module.exports = ({Then}) => {
         const select = pageMap[global.pageID][dropDownID];
 
         const optionsPromise = new Promise((res, rej) => {
-            select.findElements(by.css('option')).then((selections) => {
+            select.findElements(by.tagName('option')).then((selections) => {
                 const optionsArray = [];
                 selections.forEach((selection) => {
                     selection.getText().then((option) => {
@@ -97,7 +97,7 @@ module.exports = ({Then}) => {
         const select = pageMap[global.pageID][dropDownID];
 
         const optionsPromise = new Promise((res, rej) => {
-            select.findElements(by.css('option')).then((selections) => {
+            select.findElements(by.tagName('option')).then((selections) => {
                 const numSelections = selections.length;
                 res(numSelections > 1);
             });

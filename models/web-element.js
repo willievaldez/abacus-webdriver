@@ -1,154 +1,74 @@
 module.exports = function (locator) {
-    const myElement = {};
-    myElement.locator = locator;
+    const element = {};
+    element.locator = locator;
 
-    myElement.click = function () {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
-          .then(function () {
-              const elementToClick = driver.findElement(myElement.locator);
-              return driver.wait(until.elementIsVisible(elementToClick), 5000, `Element ${myElement.locator} not visible`)
-                .then(function() {
-                    driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
-                    return elementToClick.click();
+    function callWDElementFunction(name, arg) {
+        return driver.wait(until.elementLocated(element.locator), 5000, `Element ${element.locator} not in DOM`)
+          .then(function() {
+              const wdElement = driver.findElement(element.locator);
+              driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", wdElement);
+              return driver.wait(until.elementIsVisible(wdElement), 5000, `Element ${element.locator} not visible`)
+                .then(function () {
+                    if (arg) {
+                        if (arg === 'ES') return driver.executeScript(`arguments[0].${name}()`, wdElement);
+                        else return wdElement[name](arg);
+                    }
+                    else return wdElement[name]();
                 })
-                .catch(function(err) {
+                .catch(function (err) {
+                    if (err.name === "StaleElementReferenceError") {
+                        return driver.wait(until.elementLocated(element.locator), 5000, `Element ${element.locator} not in DOM`)
+                          .then(function() {
+                              return callWDElementFunction(name, arg);
+                          })
+                          .catch(function(err) {
+                              return err;
+                          });
+                    }
+                    console.log(err.name);
                     return err;
                 })
           })
-          .catch(function (err) {
+          .catch(function(err) {
               return err;
           });
+
+    }
+
+    element.click = function () {
+        return callWDElementFunction('click', 'ES');
     };
 
-    myElement.sendKeys = function (keys) {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
-          .then(function () {
-              const elementToClick = driver.findElement(myElement.locator);
-              return driver.wait(until.elementIsVisible(elementToClick), 5000, `Element ${myElement.locator} not visible`)
-                .then(function() {
-                    driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
-                    return elementToClick.sendKeys(keys);
-                })
-                .catch(function(err) {
-                    return err;
-                })
-          })
-          .catch(function (err) {
-              return err;
-          });
+    element.sendKeys = function (keys) {
+        return callWDElementFunction('sendKeys', keys);
     };
 
-    myElement.clear = function () {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
-          .then(function () {
-              const elementToClick = driver.findElement(myElement.locator);
-              return driver.wait(until.elementIsVisible(elementToClick), 5000, `Element ${myElement.locator} not visible`)
-                .then(function() {
-                    driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", elementToClick);
-                    return elementToClick.clear();
-                })
-                .catch(function(err) {
-                    return err;
-                })
-          })
-          .catch(function (err) {
-              return err;
-          });
+    element.clear = function () {
+        return callWDElementFunction('clear');
     };
 
     // // // // // These functions expose the user to raw webdriver, which can lead to complete execution failure
-    myElement.findElements = function (byLocator) {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
-          .then(function () {
-              const parentElement = driver.findElement(myElement.locator);
-              return parentElement.findElements(byLocator);
-          })
-          .catch(function (err) {
-              return err;
-          });
+    element.findElements = function (byLocator) {
+        return callWDElementFunction('findElements', byLocator);
     };
 
-    myElement.findElement = function (byLocator) {
-        driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
-          .catch(function (err) {
-              return err;
-          });
-        const parentElement = driver.findElement(myElement.locator);
-        return parentElement.findElement(byLocator);
+    element.findElement = function (byLocator) {
+        return callWDElementFunction('findElement', byLocator);
     };
     // // // // //
 
-    myElement.getText = function () {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
-          .then(function () {
-              const elementToRead = driver.findElement(myElement.locator);
-              return driver.wait(until.elementIsVisible(elementToRead)).then(function () {
-                  return elementToRead.getText();
-              });
-          })
-          .catch(function (err) {
-              return err;
-          });
-    };
-
-    myElement.getAttribute = function (attr) {
-        return driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
-          .then(function () {
-              const elementToRead = driver.findElement(myElement.locator);
-              return driver.wait(until.elementIsVisible(elementToRead)).then(function () {
-                  return elementToRead.getAttribute(attr);
-              });
-          })
-          .catch(function (err) {
-              return err;
-          });
-    };
-
-    myElement.isDisplayed = function () {
-        return new Promise((resolve, reject) => {
-            return driver.wait(until.elementLocated(myElement.locator), 2000, `Element ${myElement.locator} not in DOM`)
-              .then(() => {
-                  driver.findElement(myElement.locator).isDisplayed().then((isDisplayed) => {
-                      resolve(isDisplayed);
-                  })
-              })
-              .catch((err) => {
-                  resolve(false);
-              });
+    element.getText = function () {
+        return callWDElementFunction('getText').then(function(gottenText) {
+            return gottenText.trim();
         });
     };
 
-    // Returns a promise that resolves when the location becomes static
-    myElement.waitForStaticLocation = function () {
-        return new Promise((resolve, reject) => {
-            let location = {x: -1, y: -1};
-            let streak = 0;
-            driver.wait(until.elementLocated(myElement.locator), 5000, `Element ${myElement.locator} not in DOM`)
-              .then(() => {
-                  var start = new Date();
-                  const compareLocation = function () {
-                      var end = new Date() - start;
-                      if(end / 1000 > 3) resolve('Looks like your element has the zoomies');
-                      driver.findElement(myElement.locator).getLocation().then(({x, y}) => {
-                          if (location.x === x && location.y === y) {
-                              streak++;
-                              if(streak >= 5) resolve();
-                              else compareLocation();
-                          }
-                          else {
-                              location = {x, y};
-                              streak = 0;
-                              compareLocation();
-                          }
-                      })
-                  };
-                  compareLocation();
-              })
-              .catch((err) => {
-                  resolve(err);
-              });
-        });
+    element.getAttribute = function (attr) {
+        return callWDElementFunction('getAttribute', attr);
+    };
 
+    element.isDisplayed = function () {
+        return callWDElementFunction('isDisplayed');
     };
 
     // waits for info extracted from an element to satisfy the inputted matching text
@@ -162,10 +82,10 @@ module.exports = function (locator) {
             let endCheck = false;
             const checkTextFunction = function (toPrint) {
                 const end = new Date() - start;
-                if (end / 1000 > 10) endCheck = true;
+                if (end / 1000 > 5) endCheck = true;
                 if (endCheck) resolve(new Error(toPrint));
-                driver.wait(until.elementLocated(myElement.locator), 5000).then(() => {
-                    const testElement = driver.findElement(myElement.locator);
+                driver.wait(until.elementLocated(element.locator), 10000).then(() => {
+                    const testElement = driver.findElement(element.locator);
 
                     extractInfo(testElement)
                       .then((text) => {
@@ -173,11 +93,11 @@ module.exports = function (locator) {
                               endCheck = true;
                               resolve();
                           }
-                          else checkTextFunction("Text was " + text);
+                          else resolve(new Error("Text was " + text));
                       })
                       .catch(checkTextFunction);
                 })
-                  .catch(checkTextFunction);
+                  .catch(resolve);
             };
 
             checkTextFunction("Start");
@@ -185,14 +105,14 @@ module.exports = function (locator) {
 
     };
 
-    myElement.waitUntil =
+    element.waitUntil =
       {
           text: {
               is: (text) => {
                   return waitFor((testElement) => {
                       return testElement.getText();
                   }, (actual, expected) => {
-                      return actual === expected;
+                      return actual.trim() === expected.trim();
                   }, text);
               },
               matches: (text) => {
@@ -217,10 +137,10 @@ module.exports = function (locator) {
                           testElement.getAttribute('value').then((val) => {
                               testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
                                   resolve(data);
-                              }).catch((err)=>{
+                              }).catch((err) => {
                                   reject(err);
                               });
-                          }).catch((err)=>{
+                          }).catch((err) => {
                               reject(err);
                           });
                       });
@@ -234,10 +154,10 @@ module.exports = function (locator) {
                           testElement.getAttribute('value').then((val) => {
                               testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
                                   resolve(data);
-                              }).catch((err)=>{
+                              }).catch((err) => {
                                   reject(err);
                               });
-                          }).catch((err)=>{
+                          }).catch((err) => {
                               reject(err);
                           });
                       });
@@ -251,10 +171,10 @@ module.exports = function (locator) {
                           testElement.getAttribute('value').then((val) => {
                               testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
                                   resolve(data);
-                              }).catch((err)=>{
+                              }).catch((err) => {
                                   reject(err);
                               });
-                          }).catch((err)=>{
+                          }).catch((err) => {
                               reject(err);
                           });
                       });
@@ -266,5 +186,5 @@ module.exports = function (locator) {
       };
 
 
-    return myElement;
+    return element;
 };
