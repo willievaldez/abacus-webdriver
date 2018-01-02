@@ -6,7 +6,7 @@ module.exports = function (locator) {
         return driver.wait(until.elementLocated(element.locator), 5000, `Element ${element.locator} not in DOM`)
           .then(function() {
               const wdElement = driver.findElement(element.locator);
-              driver.executeScript("arguments[0].scrollIntoView({block: 'center'})", wdElement);
+              driver.executeScript("arguments[0].scrollIntoView(false)", wdElement);
               return driver.wait(until.elementIsVisible(wdElement), 5000, `Element ${element.locator} not visible`)
                 .then(function () {
                     if (arg) {
@@ -25,7 +25,6 @@ module.exports = function (locator) {
                               return err;
                           });
                     }
-                    console.log(err.name);
                     return err;
                 })
           })
@@ -36,7 +35,7 @@ module.exports = function (locator) {
     }
 
     element.click = function () {
-        return callWDElementFunction('click', 'ES');
+        return callWDElementFunction('click');
     };
 
     element.sendKeys = function (keys) {

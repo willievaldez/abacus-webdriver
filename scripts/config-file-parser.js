@@ -24,11 +24,8 @@ const registerVariables = function registerVariables(jsonObject, keyName) {
 module.exports = function(config){
     if(config){
         if (config.substring(0,2) !== './') config = `./${config}`;
+        registerVariables(require(`${process.env.PWD}/${config}`), '');
     }
-    else {
-        config = './abacus-conf.json';
-    }
-    registerVariables(require(`${process.env.PWD}/${config}`), '');
 
     // If the user missed any required variables, supply the default variables
     registerVariables({
