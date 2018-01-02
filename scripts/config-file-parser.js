@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 /**
  * Register Variables in NODE_ENV process variables.
  * @param {Object} jsonObject.
@@ -15,7 +17,21 @@ const registerVariables = function registerVariables(jsonObject, keyName) {
                 registerVariables(objVal, `${keyName}${objKeys[i].toUpperCase()}_`);
             }
             else {
-                process.env[`${keyName}${objKeys[i].toUpperCase()}`] = objVal;
+                if (typeof(objVal) === "boolean")
+                    process.env[`${keyName}${objKeys[i].toUpperCase()}`] = objVal;
+                else {
+                    const isFile = objVal.match(/FILE::(.*)/);
+                    if (isFile) {
+                        const filepath = isFile[1];
+                        if (/(.*).json/.test(filepath))
+                            registerVariables(require(filepath), `${keyName}${objKeys[i].toUpperCase()}_`);
+                        else
+                            process.env[`${keyName}${objKeys[i].toUpperCase()}`] = fs.readFileSync(filepath, 'utf8');
+
+                    }
+                    else process.env[`${keyName}${objKeys[i].toUpperCase()}`] = objVal;
+                }
+
             }
         }
     }
