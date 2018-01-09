@@ -4,7 +4,8 @@ const dataTable = require('./data-table');
 
 
 module.exports = function(conglomeratedReport, callback) {
-
+    let numPassed = 0;
+    let numFailed = 0;
     const featureLUT = {};
 
     // combine the arrays of each process report into one huge report and write it to a json file.
@@ -25,8 +26,6 @@ module.exports = function(conglomeratedReport, callback) {
 
     function writeHTML() {
         let htmlSource = '';
-        let numPassed = 0;
-        let numFailed = 0;
 
         const features = Object.keys(featureLUT);
         for (let i = 0; i < features.length; i++) {
@@ -75,7 +74,7 @@ module.exports = function(conglomeratedReport, callback) {
 
         const openFile = function() {
             open('./reports/report.html');
-            callback();
+            callback(numFailed);
         };
         fs.writeFile('./reports/report.html', htmlSource,openFile);
     }
