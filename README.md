@@ -149,13 +149,64 @@ Much like step definitions, all hooks must call the callback method when complet
 - BeforeEach: Run once before each scenario execution
 - AfterEach: Run once after each scenario execution
 - AfterAll: Run once after each parallel execution
-- Shutdown: Run once after all parllel executions
+- Shutdown: Run once after all parallel executions
 
+
+## Configuration File
+Abacus parses json files and converts them to environment variables. For example, if you supply a configuration file that looks like this:
+```json
+{
+  "cucumber": {
+    "inclusive_tags": [
+      "@Smoke"
+    ],
+    "exclusive_tags": []
+  },
+  "selenium": {
+    "browser": "chrome",
+    "browser_instances":"1"
+  }
+}
+```
+Abacus will create 4 environment variables:
+```
+CUCUMBER_INCLUSIVE_TAGS
+CUCUMBER_EXCLUSIVE_TAGS
+SELENIUM_BROWSER
+SELENIUM_BROWSER_INSTANCES
+```
+These environment variables are exposed to Node.js through the `process.env` variable. Abacus supplies the following configuration by default. If you wish to change any of the values, supply your own configuration file.
+```json
+{
+  "cucumber": {
+      "feature_directory": "./features/",
+      "page_object_directory":"./page_objects/",
+      "step_definition_directory":"./step_definitions/",
+      "hook_directory":"./hooks/",
+      "inclusive_tags": [],
+      "exclusive_tags": [],
+      "step_timeout": "20",
+      "redirect_timeout":"10"
+  },
+  "selenium": {
+      "browser": "chrome",
+      "browser_instances":"1"
+  }
+}
+```
 
 ## Running your tests
+There are 3 ways to execute abacus through the command line. The first, and most simple, is by globally installing abacus to your machine using `npm i -g abacus-webdriver`. Using this method allows you to execute your tests by simply typing `abacus` in the directory of your project. You can specify a config file, for example one called `local.json`, by typing `abacus local.json`
 
-### Configuration File
-TODO
+If you prefer not to globally install abacus, you can call execute your tests by typing `./node_modules/.bin/abacus`. You can specify a config file, for example one called `local.json`, by typing `./node_modules/.bin/abacus local.json`
 
+The third (and my personal favorite) way is to add an npm script alias in your `package.json` file. in your scripts section,
+add the following line:
+```json
+  "scripts": {
+    "abacus": "abacus"
+  }
+```
+You can then run your tests by typing `npm run abacus`. You can specify a config file, for example one called `local.json`, by typing `npm run abacus -- local.json`. In this case, the two hyphens (`--`) are used to tell npm that the following text will be command line arguments.
 ## Example
 *Coming Soon!*
