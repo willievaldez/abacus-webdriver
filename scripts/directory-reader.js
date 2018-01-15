@@ -13,7 +13,7 @@ const readDirectory = function (dir, fileRegex) {
         return new Promise((res, rej) => {
             readDirectories[dir] = false;
             fs.readdir(dir, (err, files) => {
-                if (err) throw err;
+                if (err) return res([]);
                 if (files.length === 0) {
                     readDirectories[dir] = true;
                     return res([]);

@@ -17,9 +17,9 @@ module.exports = function() {
   };
 
   //include the generic steps in the repo
-  const actionSteps = require(`${__dirname}/../step_definitions/action-steps`);
+  const actionSteps = require('../generics/action-steps');
   actionSteps(supportCode);
-  const verificationSteps = require(`${__dirname}/../step_definitions/verification-steps`);
+  const verificationSteps = require('../generics/verification-steps');
   verificationSteps(supportCode);
 
   return new Promise((res, rej)=>{

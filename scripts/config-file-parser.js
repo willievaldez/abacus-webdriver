@@ -50,6 +50,7 @@ module.exports = function(config){
             "page_object_directory":"./page_objects/",
             "step_definition_directory":"./step_definitions/",
             "hook_directory":"./hooks/",
+            "rvg_directory":"./rvg/",
             "inclusive_tags": [],
             "exclusive_tags": [],
             "step_timeout": "20",
