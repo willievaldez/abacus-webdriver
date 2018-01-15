@@ -200,7 +200,7 @@ There are 3 ways to execute abacus through the command line. The first, and most
 
 If you prefer not to globally install abacus, you can call execute your tests by typing `./node_modules/.bin/abacus`. You can specify a config file, for example one called `local.json`, by typing `./node_modules/.bin/abacus local.json`
 
-The third (and my personal favorite) way is to add an npm script alias in your `package.json` file. in your scripts section,
+The third (and my personal favorite) way is to add an npm script alias in your `package.json` file. In your scripts section,
 add the following line:
 ```json
   "scripts": {
