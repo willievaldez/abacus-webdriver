@@ -6,7 +6,7 @@ const dataTable = function(table) {
             const exampleReplacements = row[j].match(/{([^}]*)}/g);
             for (let k = 0; k < exampleReplacements.length; k++) {
                 const replacement = exampleReplacements[k];
-                row[j] = row[j].replace(replacement,global[replacement.substring(1,replacement.length-1)]);
+                row[j] = row[j].replace(replacement,global.storedValues[replacement.substring(1,replacement.length-1)]);
             }
         }
     }

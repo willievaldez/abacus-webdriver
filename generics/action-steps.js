@@ -116,11 +116,10 @@ module.exports = ({Given, When, Then}) => {
     //     browser.driver.switchTo().window(handles[0]).then(next);
     //   });
     // });
-    //
-    // When(/^user refreshes the window$/, (next) => {
-    //   browser.driver.navigate().refresh();
-    //   browser.sleep(1500).then(next);
-    // });
+
+    When(/^user refreshes the page/, (next) => {
+      driver.navigate().refresh().then(next);
+    });
     
     // When(/^user accepts confirmation dialog$/, (next) => {
     //   browser.switchTo().alert().then((alert) => {

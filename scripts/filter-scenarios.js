@@ -77,17 +77,15 @@ const constructScenariosFromOutline = function (scenario) {
 
 // used to replace
 const replaceKeyValues = function (scenario) {
-    const randomValues = new rvg();
-
     // Look in the title for any rvg variables
-    scenario.title = randomValues.randomize(scenario.title);
-    scenario.title = randomValues.getRandomValues(scenario.title);
+    scenario.title = rvg.randomize(scenario.title);
+    scenario.title = rvg.getRandomValues(scenario.title);
 
     //look in each step for any rvg variables
     for (let i = 0; i < scenario.steps.length; i++) {
         const step = scenario.steps[i];
-        scenario.steps[i].step = randomValues.randomize(step.step);
-        scenario.steps[i].step = randomValues.getRandomValues(step.step);
+        scenario.steps[i].step = rvg.randomize(step.step);
+        scenario.steps[i].step = rvg.getRandomValues(step.step);
 
         // if the step has a data table, look for any rvg variables
         if (step.table) {
@@ -95,8 +93,8 @@ const replaceKeyValues = function (scenario) {
                 const row = step.table[j];
                 for(let k = 0; k < row.length; k++) {
                     const entry = row[k];
-                    scenario.steps[i].table[j][k] = randomValues.randomize(entry);
-                    scenario.steps[i].table[j][k] = randomValues.getRandomValues(scenario.steps[i].table[j][k]);
+                    scenario.steps[i].table[j][k] = rvg.randomize(entry);
+                    scenario.steps[i].table[j][k] = rvg.getRandomValues(scenario.steps[i].table[j][k]);
                 }
             }
         }
@@ -106,14 +104,13 @@ const replaceKeyValues = function (scenario) {
 
 const filterScenarios = function () {
     return new Promise((res, rej) => {
-        gatherFeatures().then((features) => {
+        Promise.all([gatherFeatures(), rvg.init()]).then(([features, rvg]) => {
             const scenariosToExecute = [];
             let parsedFeatures = 0;
             features.forEach((feature) => {
                 parsedFeatures++;
                 let parsedScenarios = 0;
                 feature.scenarios.forEach((scenario) => {
-
                     parsedScenarios++;
                     if (scenario.type === "Scenario") {
                         if (shouldIncludeScenario(scenario)) {
