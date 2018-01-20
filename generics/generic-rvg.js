@@ -101,6 +101,44 @@ module.exports = (rvg) => {
     });
 
     /**
+     * returns a random date of birth where the age is currently over 18.
+     * @returns {string} dob - the date of birth of the format __/__/____.
+     */
+    rvg(/^dobOver18\((.*)\)$/, (modifier) => {
+        const date = new Date();
+        const yearToday = date.getFullYear();
+        const randYear = chance.integer({min: yearToday - 100, max: yearToday - 18});
+        const dob = chance.date({year: randYear});
+
+        const dateFormat = modifier.split('/');
+        let finalDate = '';
+        for (let i = 0; i < dateFormat.length; i++) {
+            if (i !== 0) finalDate += '/';
+            switch(dateFormat[i]) {
+                case 'MM':
+                    finalDate += `0${dob.getMonth() + 1}`.slice(-2);
+                    break;
+                case 'M':
+                    finalDate += `${dob.getMonth() + 1}`;
+                    break;
+                case 'DD':
+                    finalDate += `0${dob.getDate()}`.slice(-2);
+                    break;
+                case 'D':
+                    finalDate += `${dob.getDate()}`;
+                    break;
+                case 'YY':
+                    finalDate += `${dob.getFullYear()}`.slice(-2);
+                    break;
+                case 'YYYY':
+                    finalDate += `${dob.getFullYear()}`;
+                    break;
+            }
+        }
+        return finalDate;
+    });
+
+    /**
      * returns a string of today's date.
      * @returns {string} date - today's date in the format __/__/____.
      */
@@ -110,6 +148,42 @@ module.exports = (rvg) => {
         const day = (`0${today.getDate()}`).slice(-2);
         const year = today.getFullYear();
         return `${month}/${day}/${year}`;
+    });
+
+    /**
+     * returns a string of today's date.
+     * @returns {string} date - today's date in the format __/__/____.
+     */
+    rvg(/^dateToday\((.*)\)$/, (modifier) => {
+        const today = new Date();
+
+        const dateFormat = modifier.split('/');
+        let finalDate = '';
+        for (let i = 0; i < dateFormat.length; i++) {
+            if (i !== 0) finalDate += '/';
+            switch(dateFormat[i]) {
+                case 'MM':
+                    finalDate += `0${today.getMonth() + 1}`.slice(-2);
+                    break;
+                case 'M':
+                    finalDate += `${today.getMonth() + 1}`;
+                    break;
+                case 'DD':
+                    finalDate += `0${today.getDate()}`.slice(-2);
+                    break;
+                case 'D':
+                    finalDate += `${today.getDate()}`;
+                    break;
+                case 'YY':
+                    finalDate += `${today.getFullYear()}`.slice(-2);
+                    break;
+                case 'YYYY':
+                    finalDate += `${today.getFullYear()}`;
+                    break;
+            }
+        }
+        return finalDate;
+
     });
 
     /**
