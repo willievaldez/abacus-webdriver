@@ -3,7 +3,7 @@ const open = require('open');
 const dataTable = require('./data-table');
 
 
-module.exports = function(conglomeratedReport, callback) {
+module.exports = function(conglomeratedReport) {
     let numPassed = 0;
     let numFailed = 0;
     const featureLUT = {};
@@ -20,63 +20,58 @@ module.exports = function(conglomeratedReport, callback) {
         }
     }
 
-    fs.writeFile('./reports/report.json', JSON.stringify(finalReport),writeHTML);
+    fs.writeFileSync('./reports/report.json', JSON.stringify(finalReport));
 
 
+    let htmlSource = '';
 
-    function writeHTML() {
-        let htmlSource = '';
+    const features = Object.keys(featureLUT);
+    for (let i = 0; i < features.length; i++) {
+        let featureHTML = `<div id="${i}" style="display: none;">`;
 
-        const features = Object.keys(featureLUT);
-        for (let i = 0; i < features.length; i++) {
-            let featureHTML = `<div id="${i}" style="display: none;">`;
-
-            let featureColor = 'green';
-            for (let k = 0; k < featureLUT[features[i]].length; k++) {
-                const scenarioResult = featureLUT[features[i]][k];
-                let color = 'green';
-                if (scenarioResult.status === 'Fail') {
-                    featureColor = 'red';
-                    numFailed++;
-                    color = 'red';
-                }                else numPassed++;
-                featureHTML += `<h2 onclick="toggleShow('${i}_${k}')" style="color:${color};">${scenarioResult.title}</h2>`;
-                featureHTML += `<div id="${i}_${k}" style="display: none;">`;
-                for (let s = 0; s < scenarioResult.steps.length; s++) {
-                    const stepResults = scenarioResult.steps[s];
-                    color = 'green';
-                    if (stepResults.status === undefined) color = '#e6e6e6';
-                    else if (stepResults.status === 'Fail') color = 'red';
-                    featureHTML += `<div style="color:${color};">${stepResults.keyword} ${stepResults.step}`;
-                    if (stepResults.table) featureHTML += `<pre>${dataTable.format(stepResults.table)}</pre>`;
-                    featureHTML += '</div>';
-                    if (stepResults.status === 'Fail') {
-                        featureHTML += `<button onclick="toggleShow('${i}_${k}_${s}_img')"> Show/Hide Image </button>`;
-                        featureHTML += `<button onclick="toggleShow('${i}_${k}_${s}_err')"> Show/Hide Error </button>`;
-                        featureHTML += `<img id="${i}_${k}_${s}_img" style="display: none;" class="center fit" src="${stepResults.img}">`;
-                        featureHTML += `<pre id="${i}_${k}_${s}_err" style="display: none; color:${color};"><code>${stepResults.error.message}</code></pre>`;
-                    }
-                }
+        let featureColor = 'green';
+        for (let k = 0; k < featureLUT[features[i]].length; k++) {
+            const scenarioResult = featureLUT[features[i]][k];
+            let color = 'green';
+            if (scenarioResult.status === 'Fail') {
+                featureColor = 'red';
+                numFailed++;
+                color = 'red';
+            }                else numPassed++;
+            featureHTML += `<h2 onclick="toggleShow('${i}_${k}')" style="color:${color};">${scenarioResult.title}</h2>`;
+            featureHTML += `<div id="${i}_${k}" style="display: none;">`;
+            for (let s = 0; s < scenarioResult.steps.length; s++) {
+                const stepResults = scenarioResult.steps[s];
+                color = 'green';
+                if (stepResults.status === undefined) color = '#e6e6e6';
+                else if (stepResults.status === 'Fail') color = 'red';
+                featureHTML += `<div style="color:${color};">${stepResults.keyword} ${stepResults.step}`;
+                if (stepResults.table) featureHTML += `<pre>${dataTable.format(stepResults.table)}</pre>`;
                 featureHTML += '</div>';
+                if (stepResults.status === 'Fail') {
+                    featureHTML += `<button onclick="toggleShow('${i}_${k}_${s}_img')"> Show/Hide Image </button>`;
+                    featureHTML += `<button onclick="toggleShow('${i}_${k}_${s}_err')"> Show/Hide Error </button>`;
+                    featureHTML += `<img id="${i}_${k}_${s}_img" style="display: none;" class="center fit" src="${stepResults.img}">`;
+                    featureHTML += `<pre id="${i}_${k}_${s}_err" style="display: none; color:${color};"><code>${stepResults.error.message}</code></pre>`;
+                }
             }
-            featureHTML = `<h2 style="color:${featureColor};" onclick="toggleShow('${i}')">${features[i]}</h2>` + featureHTML + '</div>';
-            htmlSource += featureHTML;
+            featureHTML += '</div>';
         }
-
-        htmlSource += '</body></html>';
-
-        htmlSource = `<center><h1>PASS: ${numPassed}</h1><h1>FAIL: ${numFailed}</h1></center>` + htmlSource;
-        let header = '<html><head><style>';
-        header += '*{padding: 5;margin: 5;}.fit {max-width: 100%;max-height: 100%;}.center {display: block;margin: auto;}';
-        header += '</style></head><body>';
-        header += '<script> function toggleShow(id) {var x = document.getElementById(id);if (x.style.display === "none") {x.style.display = "block";} else {x.style.display = "none";}} </script>';
-        htmlSource = header + htmlSource;
-
-        const openFile = function() {
-            open('./reports/report.html');
-            callback(numFailed);
-        };
-        fs.writeFile('./reports/report.html', htmlSource,openFile);
+        featureHTML = `<h2 style="color:${featureColor};" onclick="toggleShow('${i}')">${features[i]}</h2>` + featureHTML + '</div>';
+        htmlSource += featureHTML;
     }
+
+    htmlSource += '</body></html>';
+
+    htmlSource = `<center><h1>PASS: ${numPassed}</h1><h1>FAIL: ${numFailed}</h1></center>` + htmlSource;
+    let header = '<html><head><style>';
+    header += '*{padding: 5;margin: 5;}.fit {max-width: 100%;max-height: 100%;}.center {display: block;margin: auto;}';
+    header += '</style></head><body>';
+    header += '<script> function toggleShow(id) {var x = document.getElementById(id);if (x.style.display === "none") {x.style.display = "block";} else {x.style.display = "none";}} </script>';
+    htmlSource = header + htmlSource;
+
+    fs.writeFileSync('./reports/report.html', htmlSource);
+    open('./reports/report.html');
+    return numFailed;
 
 };

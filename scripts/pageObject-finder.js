@@ -1,6 +1,6 @@
 const readDir = require('./directory-reader');
 
-pageMap = {};
+global.pageMap = {};
 
 module.exports = function() {
   return new Promise((res, rej)=>{

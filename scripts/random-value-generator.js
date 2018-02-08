@@ -1,8 +1,4 @@
-const Chance = require('chance');
-const moment = require('moment');
 const readDir = require('./directory-reader');
-
-const chance = new Chance();
 
 const rvgs = [];
 const storedValues = {};
@@ -10,7 +6,7 @@ const storedValues = {};
 const init = function() {
     const appendRVGS = function(regex, rvgFunc) {
         rvgs.push({regex, rvgFunc});
-    }
+    };
 
 //include the generic rvg in the repo
     const genericRVGs = require('../generics/generic-rvg');
@@ -31,7 +27,7 @@ const init = function() {
         });
     });
 
-}
+};
 
 const callRVGFunction = function(testRVG) {
     let rvgFound = false;
@@ -41,11 +37,10 @@ const callRVGFunction = function(testRVG) {
             const regexResults = testRVG.match(rvgs[i].regex);
             regexResults.splice(0, 1);
             return rvgs[i].rvgFunc.apply(null, regexResults);
-            break;
         }
     }
     if (!rvgFound) throw new Error(`${testRVG} is not a random value generator function`);
-}
+};
 
 const randomize = function(string) {
     let newString = string;
@@ -73,7 +68,7 @@ const randomize = function(string) {
 
     }
     return newString;
-}
+};
 
 const getRandomValues = function(string) {
     let newString = string;
@@ -86,7 +81,7 @@ const getRandomValues = function(string) {
 
     }
     return newString;
-}
+};
 
 
-module.exports = {init, randomize, callRVGFunction, getRandomValues};
+module.exports = {init, randomize, getRandomValues};
