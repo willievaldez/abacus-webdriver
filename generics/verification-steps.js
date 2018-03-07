@@ -5,6 +5,13 @@ module.exports = ({Then}) => {
     Then(/^user is taken to the "([^"]*)" page$/, async (pageURI) => {
         global.pageID = pageURI;
         if (!pageMap[global.pageID]) throw new Error(`Page Object with name ${pageURI} is not defined`);
+        // const result = await driver.wait(until.urlMatches(pageMap[global.pageID].URL), process.env.CUCUMBER_REDIRECT_TIMEOUT * 1000, `URL never matched ${pageMap[global.pageID].URL}`)
+        // if (result !== true) {
+        //   return result;
+        // }
+
+        return null;
+
     });
 
     Then(/^the "([^"]*)" element (value|text) (is|contains|matches) "(.*)"$/, async (labelText, valOrText, matchType, text) => {
