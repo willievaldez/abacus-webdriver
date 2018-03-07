@@ -1,4 +1,4 @@
-import {expect} from 'chai';
+const expect = require('chai');
 
 module.exports = ({Then}) => {
 
@@ -7,7 +7,7 @@ module.exports = ({Then}) => {
         if (!pageMap[global.pageID]) throw new Error(`Page Object with name ${pageURI} is not defined`);
         const result = await driver.wait(until.urlMatches(pageMap[global.pageID].URL), process.env.CUCUMBER_REDIRECT_TIMEOUT * 1000, `URL never matched ${pageMap[global.pageID].URL}`)
         if (result !== true) {
-          return result;
+            return result;
         }
 
         return null;
