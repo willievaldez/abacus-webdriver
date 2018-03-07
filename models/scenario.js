@@ -1,3 +1,5 @@
+const Step = require('./step');
+
 class Scenario {
   constructor(scenarioJSON) {
     this.json = scenarioJSON;
@@ -10,26 +12,35 @@ class Scenario {
   async execute(stepManager) {
     driver = new webdriver.WebDriver(driver.getSession(), driver.getExecutor());
 
-    let stepNum = 0;
-    const steps = this.steps;
-
     if (process.env.SELENIUM_BROWSER_INSTANCES === '1') {
-      console.log(`\x1b[32m\n\n${this.title}\x1b[0m`);
+      console.log(this.title);
     }
 
-    const executionError = await new Promise((resolve, reject) => {
-      const runStep = function (err) {
-        if (err) return resolve(err);
-        if (stepNum === steps.length) return resolve();
-        const step = steps[stepNum];
-        stepNum++;
-        stepManager.runStep(step).then(runStep).catch(runStep);
-      };
+    let fail;
+    for (let step of this.steps) {
+      const stepFunction = stepManager.findStep(step);
+      if (!stepManager) {
+        fail = true;
+        break;
+      }
 
-      runStep();
-    });
+      const stepObject = new Step(step, stepFunction);
 
-    if (executionError) {
+      let results = null;
+      try {
+        results = await stepObject.runStep();
+      }
+      catch(err) {
+        console.log(err);
+        results = err;
+      }
+      if (results) {
+        fail = true;
+        break;
+      }
+    }
+
+    if (fail) {
       this.json.status = 'Fail';
       if (process.env.SELENIUM_BROWSER_INSTANCES !== '1') {
         console.log(`\x1b[31m${process.pid} - ${this.title}\x1b[0m`);

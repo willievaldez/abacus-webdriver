@@ -36,9 +36,12 @@ PageObject.prototype.urlIsNot = function (url) {
         newUrl = newURI;
         return newUrl !== url;
       });
-    }, 5000).catch(function() {
+    }, 10000)
+      .catch(function(err) {
+        console.log(err);
       reject(new Error(`Browser never navigated away from ${url}`));
-    }).then(function() {
+    })
+      .then(function() {
       resolve(newUrl);
     });
 

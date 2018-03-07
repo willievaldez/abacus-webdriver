@@ -1,16 +1,64 @@
+require('chromedriver');
+//// Declaration of global variables
+const webdriver = require('selenium-webdriver');
+const by = require('selenium-webdriver').By;
+const until = require('selenium-webdriver').until;
 
+class SeleniumDriver {
+  constructor() {
+    this.driver = new webdriver.Builder().withCapabilities(SeleniumDriver.makeCapabilities()).build();
+    if (process.env.SELENIUM_WIDTH && process.env.SELENIUM_HEIGHT)
+      this.driver.manage().window().setSize(parseInt(process.env.SELENIUM_WIDTH), parseInt(process.env.SELENIUM_HEIGHT));
+  }
 
-module.exports = function (locator) {
+  static makeCapabilities() {
+    const desiredCapabilities = {
+      'browserName': process.env.SELENIUM_BROWSER
+    };
+
+    if (process.env.SELENIUM_SAUCELABS === 'true') {
+      desiredCapabilities.username = process.env.SAUCELABS_USERNAME;
+      desiredCapabilities.accessKey = process.env.SAUCELABS_ACCESSKEY;
+      if (process.env.SAUCELABS_PLATFORM) desiredCapabilities.platform = process.env.SAUCELABS_PLATFORM;
+      if (process.env.SAUCELABS_SCREEN_RESOLUTION) desiredCapabilities.screenResolution = process.env.SAUCELABS_SCREEN_RESOLUTION;
+      if (process.env.SAUCELABS_MAX_DURATION) desiredCapabilities.maxDuration = process.env.SAUCELABS_MAX_DURATION;
+      desiredCapabilities.name = process.pid;
+      process.env.SELENIUM_REMOTE_URL = `http://${process.env.SAUCELABS_USERNAME}:${process.env.SAUCELABS_ACCESSKEY}@ondemand.saucelabs.com:80/wd/hub`;
+    }
+    return desiredCapabilities;
+  }
+
+  callWDFunction(commandString) {
+    const command = JSON.parse(commandString);
+    return this.driver[command.func].apply(this.driver, command.params);
+  }
+
+  callWDElementFunction(commandString) {
+    const command = JSON.parse(commandString);
+    const element = webElement(command.element, this.driver);
+    return element[command.func].apply(element, command.params);
+  }
+
+  quit() {
+    return this.driver.quit();
+  }
+
+  screenshot() {
+    return this.driver.takeScreenshot();
+  }
+}
+
+const webElement = function (elementJSON, driver) {
   const element = {};
-  element.locator = locator;
+  element.locator = by[elementJSON.by](elementJSON.locator);
 
-  async function callWDElementFunction(name, arg) {
+  async function elementFunction(name, arg) {
     console.log(name);
-      await driver.wait(until.elementLocated(element.locator), 5000, `Element ${element.locator} not in DOM`);
+    await driver.wait(until.elementLocated(element.locator), 5000, `Element ${element.locator} not in DOM`);
 
-      const wdElement = driver.findElement(element.locator);
-      driver.executeScript("arguments[0].scrollIntoView(false)", wdElement);
-      await driver.wait(until.elementIsVisible(wdElement), 5000, `Element ${element.locator} not visible`)
+    const wdElement = driver.findElement(element.locator);
+    driver.executeScript("arguments[0].scrollIntoView(false)", wdElement);
+    await driver.wait(until.elementIsVisible(wdElement), 5000, `Element ${element.locator} not visible`)
     try {
       if (arg) {
         if (arg === 'ES') return driver.executeScript(`arguments[0].${name}()`, wdElement);
@@ -27,39 +75,39 @@ module.exports = function (locator) {
   }
 
   element.click = function () {
-    return callWDElementFunction('click');
+    return elementFunction('click');
   };
 
   element.sendKeys = function (keys) {
-    return callWDElementFunction('sendKeys', keys);
+    return elementFunction('sendKeys', keys);
   };
 
   element.clear = function () {
-    return callWDElementFunction('clear');
+    return elementFunction('clear');
   };
 
   // // // // // These functions expose the user to raw webdriver, which can lead to complete execution failure
-  element.findElements = function (byLocator) {
-    return callWDElementFunction('findElements', byLocator);
-  };
-
-  element.findElement = function (byLocator) {
-    return callWDElementFunction('findElement', byLocator);
-  };
+  // element.findElements = function (byLocator) {
+  //   return callWDElementFunction('findElements', byLocator);
+  // };
+  //
+  // element.findElement = function (byLocator) {
+  //   return callWDElementFunction('findElement', byLocator);
+  // };
   // // // // //
 
   element.getText = function () {
-    return callWDElementFunction('getText').then(function (gottenText) {
+    return elementFunction('getText').then(function (gottenText) {
       return gottenText.trim();
     });
   };
 
   element.getAttribute = function (attr) {
-    return callWDElementFunction('getAttribute', attr);
+    return elementFunction('getAttribute', attr);
   };
 
   element.isDisplayed = function () {
-    return callWDElementFunction('isDisplayed');
+    return elementFunction('isDisplayed');
   };
 
   // waits for info extracted from an element to satisfy the inputted matching text
@@ -179,3 +227,6 @@ module.exports = function (locator) {
 
   return element;
 };
+
+
+module.exports = SeleniumDriver;

@@ -73,8 +73,8 @@ module.exports = ({Given, When, Then}) => {
         expect(driver.actions().sendKeys(webdriver.Key[key]).perform()).to.eventually.be.ok.and.notify(next);
     });
 
-    Then(/^user waits for ([0-9]+) seconds$/, (num, next) => {
-        driver.sleep(num * 1000).then(next);
+    Then(/^user waits for ([0-9]+) seconds$/, async (num) => {
+        await driver.sleep(num * 1000);
     });
     //
     // Then(/^user waits for "([^"]*)" element to be present$/, { timeout: 2 * 60 * 1000 }, (elementText, next) => {
@@ -120,7 +120,7 @@ module.exports = ({Given, When, Then}) => {
     When(/^user refreshes the page/, (next) => {
       driver.navigate().refresh().then(next);
     });
-    
+
     // When(/^user accepts confirmation dialog$/, (next) => {
     //   browser.switchTo().alert().then((alert) => {
     //     alert.accept().then(next);
