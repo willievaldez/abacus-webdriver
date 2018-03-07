@@ -8,7 +8,7 @@ const getOpenRequests = function() {
     if (openRequests === 0) res();
     else resolve = res;
   });
-}
+};
 
 const element = function(el) {
   const element = {};

@@ -28,6 +28,40 @@ class SeleniumDriver {
     return desiredCapabilities;
   }
 
+
+  static jsonError(err) {
+    if (!err) return 'END: ';
+    return `END: ${JSON.stringify({
+      stack: err.stack,
+      message: err.message
+    })}`;
+  }
+
+  interpret(m,childDriver) {
+    if (/WD: (\d+) - (.*)/.test(m)) {
+      const regexResults = m.match(/WD: (\d+) - (.*)/);
+      const uniqueId = regexResults[1];
+      console.log('WD MESSAGE RECEIVED', m);
+
+      this.callWDFunction(regexResults[2]).then((result) => {
+        if (childDriver) childDriver.send(`WD: ${uniqueId} - ${result}`);
+      }).catch((err) => {
+        if (childDriver) childDriver.send(this.jsonError(err));
+      });
+    }
+    else if (/WDE: (\d+) - (.*)/.test(m)) {
+      const regexResults = m.match(/WDE: (\d+) - (.*)/);
+      const uniqueId = regexResults[1];
+      console.log('WDE MESSAGE RECEIVED', m);
+
+      this.callWDElementFunction(regexResults[2]).then((result) => {
+        if (childDriver) childDriver.send(`WDE: ${uniqueId} - ${result}`);
+      }).catch((err) => {
+        if (childDriver) childDriver.send(this.jsonError(err));
+      });
+    }
+  }
+
   callWDFunction(commandString) {
     const command = JSON.parse(commandString);
     return this.driver[command.func].apply(this.driver, command.params);
@@ -223,7 +257,6 @@ const webElement = function (elementJSON, driver) {
         }
       }
     };
-
 
   return element;
 };

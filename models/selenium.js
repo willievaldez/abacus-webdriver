@@ -14,7 +14,7 @@ function callWDFunction(func, params=[]) {
     const listener = (m) => {
       if (/WD: (\d+) - (.*)/.test(m)) {
         const regexResults = m.match(/WD: (\d+) - (.*)/);
-        uniqueId = regexResults[1];
+        let uniqueId = regexResults[1];
         if (uniqueId === `${process.pid}${callID}`) {
           console.log('SR WD MESSAGE RECEIVED', m);
           process.removeListener('message', listener);
@@ -47,7 +47,7 @@ const driver = {
       const callback = function(){
         shouldContinue = false;
         reject(err);
-      }
+      };
       const timeout = setTimeout(callback, timeoutInterval);
 
       const callFunc = function() {
@@ -75,7 +75,7 @@ const driver = {
   },
   sleep: function(timeoutInterval) {
     return new Promise((res, rej) => {
-      const timeout = setTimeout(res, timeoutInterval);
+      setTimeout(res, timeoutInterval);
     });
   }
 };
@@ -94,7 +94,7 @@ const until = {
       });
     }
   }
-}
+};
 
 module.exports = {
   driver,
