@@ -6,9 +6,9 @@ module.exports = ({Given, When, Then}) => {
     //   basePage.goTo(url).then(next);
     // });
 
-    Given(/^user clicks on the "(.*)" button$/, (buttonText, next) => {
+    Given(/^user clicks on the "(.*)" button$/, async (buttonText) => {
         const buttonID = buttonText.replace(/ /g, '_').toUpperCase();
-        pageMap[global.pageID][buttonID].click().then(next);
+        await pageMap[global.pageID][buttonID].click();
     });
 
     // // Generic click on item of a list, this step can be used along the site

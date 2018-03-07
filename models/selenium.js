@@ -80,8 +80,25 @@ const driver = {
   }
 };
 
+// TODO: this will result in many calls to selenium which may be optimized using webdrivers 'until' function.
+const until = {
+  urlMatches: function(regex){
+    return function() {
+      return new Promise((res, rej) => {
+        driver.getCurrentUrl().then((url) => {
+          if (regex.test(url)) {
+            res(true);
+          }
+          else res(false);
+        });
+      });
+    }
+  }
+}
+
 module.exports = {
-  driver
+  driver,
+  until
 };
 
 
