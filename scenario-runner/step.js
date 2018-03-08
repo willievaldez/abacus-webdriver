@@ -1,4 +1,4 @@
-const dataTable = require('./data-table');
+const dataTable = require('../models/data-table');
 const {driver} = require('./selenium');
 const element = require('./element');
 class Step {

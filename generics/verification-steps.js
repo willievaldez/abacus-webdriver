@@ -11,9 +11,9 @@ module.exports = ({Then}) => {
 
     });
 
-    Then(/^the "([^"]*)" element (value|text) (is|contains|matches) "(.*)"$/, (labelText, valOrText, matchType, text, next) => {
+    Then(/^the "([^"]*)" element (value|text) (is|contains|matches) "(.*)"$/, async (labelText, valOrText, matchType, text) => {
         const labelID = labelText.replace(/ /g, '_').toUpperCase();
-        pageMap[global.pageID][labelID].waitUntil[valOrText][matchType](text).then(next);
+        await pageMap[global.pageID][labelID].waitUntil[valOrText][matchType](text);
     });
 
 

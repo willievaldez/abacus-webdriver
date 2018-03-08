@@ -1,6 +1,6 @@
 const fs = require('fs');
 const open = require('open');
-const dataTable = require('./data-table');
+const dataTable = require('../models/data-table');
 
 
 module.exports = function(conglomeratedReport) {

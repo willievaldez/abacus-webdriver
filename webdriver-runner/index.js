@@ -1,6 +1,6 @@
 const HookManager = require('../models/hook-manager');
 const {fork} = require('child_process');
-const SeleniumDriver = require('../models/selenium-interpreter');
+const SeleniumDriver = require('./selenium-interpreter');
 const driver = new SeleniumDriver();
 let childDriver = null;
 
@@ -55,7 +55,7 @@ async function executeScenarios(scenarios) {
   for (let scenarioJSON of scenarios) {
     await hookManager.runHooks('BeforeEach');
 
-    childDriver = fork(`${__dirname}/scenario-runner.js`, [process.pid], {env: process.env});
+    childDriver = fork(`${__dirname}/scenario-runner/index.js`, [process.pid], {env: process.env});
     childDriver.send(scenarioJSON);
 
 

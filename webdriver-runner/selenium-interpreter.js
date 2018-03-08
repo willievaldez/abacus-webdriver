@@ -46,7 +46,7 @@ class SeleniumDriver {
       this.callWDFunction(regexResults[2]).then((result) => {
         if (childDriver) childDriver.send(`WD: ${uniqueId} - ${result}`);
       }).catch((err) => {
-        if (childDriver) childDriver.send(this.jsonError(err));
+        if (childDriver) childDriver.send(SeleniumDriver.jsonError(err));
       });
     }
     else if (/WDE: (\d+) - (.*)/.test(m)) {
@@ -57,7 +57,7 @@ class SeleniumDriver {
       this.callWDElementFunction(regexResults[2]).then((result) => {
         if (childDriver) childDriver.send(`WDE: ${uniqueId} - ${result}`);
       }).catch((err) => {
-        if (childDriver) childDriver.send(this.jsonError(err));
+        if (childDriver) childDriver.send(SeleniumDriver.jsonError(err));
       });
     }
   }
@@ -144,119 +144,18 @@ const webElement = function (elementJSON, driver) {
     return elementFunction('isDisplayed');
   };
 
-  // waits for info extracted from an element to satisfy the inputted matching text
-  // params:
-  // extractInfo = function that takes in an element, and returns a promise to the necessary information
-  // matchFunc = function that takes two text elements and returns true or false based on the comparison
-  // expectedText = the text that the extracted info is compared to
-  const waitFor = function (extractInfo, matchFunc, expectedText) {
-    return new Promise((resolve, reject) => {
-      const start = new Date();
-      let endCheck = false;
-      const checkTextFunction = function (toPrint) {
-        const end = new Date() - start;
-        if (end / 1000 > 5) endCheck = true;
-        if (endCheck) resolve(new Error(toPrint));
-        driver.wait(until.elementLocated(element.locator), 10000).then(() => {
-          const testElement = driver.findElement(element.locator);
-
-          extractInfo(testElement)
-            .then((text) => {
-              if (matchFunc(text, expectedText)) {
-                endCheck = true;
-                resolve();
-              }
-              else resolve(new Error("Text was " + text));
-            })
-            .catch(checkTextFunction);
-        })
-          .catch(resolve);
-      };
-
-      checkTextFunction("Start");
-    });
-
+  element.waitUntil = async function (keyValue, matchType, expected) {
+    let wdElement = driver.findElement(element.locator);
+    if (keyValue === "value") {
+      const value = await wdElement.getAttribute(keyValue);
+      wdElement = driver.findElement(by.css(`option[value="${value}"]`));
+    }
+    return driver.wait(
+      until[`elementText${matchType}`](wdElement, expected),
+      5000,
+      new Error(`timeout waiting until ${keyValue} ${matchType.toLowerCase()} "${expected}"`)
+    );
   };
-
-  element.waitUntil =
-    {
-      text: {
-        is: (text) => {
-          return waitFor((testElement) => {
-            return testElement.getText();
-          }, (actual, expected) => {
-            return actual.trim() === expected.trim();
-          }, text);
-        },
-        matches: (text) => {
-          return waitFor((testElement) => {
-            return testElement.getText();
-          }, (actual, expected) => {
-            return new RegExp(expected).test(actual);
-          }, text);
-        },
-        contains: (text) => {
-          return waitFor((testElement) => {
-            return testElement.getText();
-          }, (actual, expected) => {
-            return actual.indexOf(expected) > -1;
-          }, text);
-        }
-      },
-      value: {
-        is: (text) => {
-          return waitFor((testElement) => {
-            return new Promise((resolve, reject) => {
-              testElement.getAttribute('value').then((val) => {
-                testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
-                  resolve(data);
-                }).catch((err) => {
-                  reject(err);
-                });
-              }).catch((err) => {
-                reject(err);
-              });
-            });
-          }, (actual, expected) => {
-            return actual === expected;
-          }, text);
-        },
-        matches: (text) => {
-          return waitFor((testElement) => {
-            return new Promise((resolve, reject) => {
-              testElement.getAttribute('value').then((val) => {
-                testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
-                  resolve(data);
-                }).catch((err) => {
-                  reject(err);
-                });
-              }).catch((err) => {
-                reject(err);
-              });
-            });
-          }, (actual, expected) => {
-            return expected.test(actual);
-          }, text);
-        },
-        contains: (text) => {
-          return waitFor((testElement) => {
-            return new Promise((resolve, reject) => {
-              testElement.getAttribute('value').then((val) => {
-                testElement.findElement(by.css(`option[value="${val}"]`)).getText().then((data) => {
-                  resolve(data);
-                }).catch((err) => {
-                  reject(err);
-                });
-              }).catch((err) => {
-                reject(err);
-              });
-            });
-          }, (actual, expected) => {
-            return actual.indexOf(expected) > -1;
-          }, text);
-        }
-      }
-    };
 
   return element;
 };

@@ -1,5 +1,5 @@
-const Step = require('../models/step');
-const StepManager = require('../models/step-manager');
+const Step = require('./step');
+const StepManager = require('./step-manager');
 const HookManager = require('../models/hook-manager');
 const gatherPageObjects = require('../scripts/pageObject-finder');
 

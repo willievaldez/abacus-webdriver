@@ -2,10 +2,10 @@
 
 const {fork} = require('child_process');
 const scl = require('sauce-connect-launcher');
-const filterScenarios = require('../scripts/filter-scenarios');
-const HookManager = require('../models/hook-manager');
-const reporter = require('../models/reporter');
-const setConfig = require('../scripts/config-file-parser');
+const filterScenarios = require('./scripts/filter-scenarios');
+const HookManager = require('./models/hook-manager');
+const reporter = require('./scripts/reporter');
+const setConfig = require('./scripts/config-file-parser');
 
 // If the exit process is unresponsive, allow for a back door to cancel the process
 let interrupt_count = 0;
@@ -72,7 +72,7 @@ async function run() {
   const fullReportPromise = new Promise((resolve, reject) => {
     const fullReport = [];
     for (let i = 0; i < scenarioPacks.length; i++) {
-      const childDriver = fork(`${__dirname}/runner.js`, [], {env: process.env});
+      const childDriver = fork(`${__dirname}/webdriver-runner/index.js`, [], {env: process.env});
       console.log('sent: '+childDriver.pid);
       childDriver.send(scenarioPacks[i]);
       childDriver.on('message', (m) => {

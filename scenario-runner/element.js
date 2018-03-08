@@ -81,6 +81,31 @@ const element = function(el) {
     return callWDElementFunction('isDisplayed');
   };
 
+  element.waitUntil = {
+    text: {
+      is: function(text) {
+        return callWDElementFunction('waitUntil', ['text', 'Is', text])
+      },
+      matches: function(regex) {
+        return callWDElementFunction('waitUntil', ['text', 'Matches', regex])
+      },
+      contains: function(text) {
+        return callWDElementFunction('waitUntil', ['text', 'Contains', text])
+      }
+    },
+    value: {
+      is: function(text) {
+        return callWDElementFunction('waitUntil', ['value', 'Is', text])
+      },
+      matches: function(regex) {
+        return callWDElementFunction('waitUntil', ['value', 'Matches', regex])
+      },
+      contains: function(text) {
+        return callWDElementFunction('waitUntil', ['value', 'Contains', text])
+      }
+    }
+  }
+
   return element;
 };
 
