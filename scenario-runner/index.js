@@ -5,13 +5,13 @@ const gatherPageObjects = require('../scripts/pageObject-finder');
 
 // Global variables
 webdriver = require('selenium-webdriver');
-element = require('../models/element').element;
-by = require('../models/element').by;
+element = require('./element').element;
+by = require('./element').by;
 expect = require('chai').use(require('chai-as-promised')).expect;
 global.storedValues = {};
 
-driver = require('../models/selenium').driver;
-until = require('../models/selenium').until;
+driver = require('./selenium').driver;
+until = require('./selenium').until;
 
 class Scenario {
   constructor(scenarioJSON) {

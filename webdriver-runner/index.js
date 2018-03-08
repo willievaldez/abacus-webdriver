@@ -55,7 +55,7 @@ async function executeScenarios(scenarios) {
   for (let scenarioJSON of scenarios) {
     await hookManager.runHooks('BeforeEach');
 
-    childDriver = fork(`${__dirname}/scenario-runner/index.js`, [process.pid], {env: process.env});
+    childDriver = fork(`${__dirname}/../scenario-runner/index.js`, [process.pid], {env: process.env});
     childDriver.send(scenarioJSON);
 
 
