@@ -1,46 +1,48 @@
-let uniqueID = 0;
-let openRequests = 0;
-let resolve = null;
-function callWDFunction(func, params=[]) {
-  uniqueID++;
-  openRequests++;
-  const callID = uniqueID;
-  const wdCall = {
-    func,
-    params
-  };
-  process.send(`WD: ${process.pid}${callID} - ${JSON.stringify(wdCall)}`);
-  return new Promise((resolve, reject) => {
-    const listener = (m) => {
-      if (/WD: (\d+) - (.*)/.test(m)) {
-        const regexResults = m.match(/WD: (\d+) - (.*)/);
-        let uniqueId = regexResults[1];
-        if (uniqueId === `${process.pid}${callID}`) {
-          console.log('SR WD MESSAGE RECEIVED', m);
-          process.removeListener('message', listener);
-          resolve(regexResults[2]);
-          openRequests--;
-          if (openRequests === 0 && resolve) {
-            resolve();
+class Driver {
+  constructor() {
+    Driver.uniqueID = 0;
+    Driver.openRequests = 0;
+    Driver.resolveOpenRequests = null;
+  }
+
+  static callWDFunction(scope, func, params=[]) {
+    Driver.uniqueID++;
+    Driver.openRequests++;
+    const callID = Driver.uniqueID;
+    const wdCall = {
+      func,
+      params
+    };
+    process.send(`${scope}: ${process.pid}${callID} - ${JSON.stringify(wdCall)}`);
+    return new Promise((resolve, reject) => {
+      const listener = (m) => {
+        if (/(\d+) - (.*)/.test(m)) {
+          const regexResults = m.match(/(\d+) - (.*)/);
+          if (regexResults[1] === `${process.pid}${callID}`) {
+            console.log(`SR ${scope} MESSAGE RECEIVED`, m);
+            process.removeListener('message', listener);
+            resolve(regexResults[2]);
+            Driver.openRequests--;
+            if (Driver.openRequests === 0 && Driver.resolveOpenRequests) {
+              Driver.resolveOpenRequests();
+            }
           }
         }
-      }
+      };
+      process.on('message', listener);
 
+    });
+  }
 
-    };
-    process.on('message', listener);
+  get(url) {
+    return Driver.callWDFunction('WD', 'get', [url]);
+  }
 
-  });
-}
+  getCurrentUrl() {
+    return Driver.callWDFunction('WD', 'getCurrentUrl');
+  }
 
-const driver = {
-  get: function(url) {
-    return callWDFunction('get', [url]);
-  },
-  getCurrentUrl: function() {
-    return callWDFunction('getCurrentUrl');
-  },
-  wait: function(func, timeoutInterval, err=new Error(`wait time out`)) {
+  wait(func, timeoutInterval, err=new Error(`wait time out`)) {
     console.log(`timeout interval ${timeoutInterval}`);
     return new Promise((resolve, reject) => {
       let shouldContinue = true;
@@ -65,40 +67,23 @@ const driver = {
       callFunc();
     });
 
-  },
-  getOpenRequests: function() {
+  }
+
+  static getOpenRequests() {
     console.log('getting open selenium requests...');
     return new Promise((res, rej) => {
-      if (openRequests === 0) res();
-      else resolve = res;
+      if (Driver.openRequests === 0) res();
+      else Driver.resolveOpenRequests = res;
     });
-  },
-  sleep: function(timeoutInterval) {
+  }
+
+  sleep(timeoutInterval) {
     return new Promise((res, rej) => {
       setTimeout(res, timeoutInterval);
     });
   }
-};
+}
 
-// TODO: this will result in many calls to selenium which may be optimized using webdrivers 'until' function.
-const until = {
-  urlMatches: function(regex){
-    return function() {
-      return new Promise((res, rej) => {
-        driver.getCurrentUrl().then((url) => {
-          if (regex.test(url)) {
-            res(true);
-          }
-          else res(false);
-        });
-      });
-    }
-  }
-};
-
-module.exports = {
-  driver,
-  until
-};
+module.exports = Driver;
 
 

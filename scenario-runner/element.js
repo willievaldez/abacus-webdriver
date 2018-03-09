@@ -1,60 +1,19 @@
-let uniqueID = 0;
-let openRequests = 0;
-let resolve = null;
-
-const getOpenRequests = function() {
-  console.log('getting open element requests');
-  return new Promise((res, rej) => {
-    if (openRequests === 0) res();
-    else resolve = res;
-  });
-};
+const Driver = require('./selenium');
 
 const element = function(el) {
   const element = {};
   element.locator = el;
 
-  function callWDElementFunction(func, params=[]) {
-    uniqueID++;
-    openRequests++;
-    const callID = uniqueID;
-    const wdCall = {
-      element: el,
-      func,
-      params
-    };
-    process.send(`WDE: ${process.pid}${callID} - ${JSON.stringify(wdCall)}`);
-    return new Promise((resolve, reject) => {
-      const listener = (m) => {
-        if (/WDE: (\d+) - (.*)/.test(m)) {
-          const regexResults = m.match(/WDE: (\d+) - (.*)/);
-          uniqueId = regexResults[1];
-          if (uniqueId === `${process.pid}${callID}`) {
-            console.log('SR WDE MESSAGE RECEIVED', m);
-            process.removeListener('message', listener);
-            resolve(regexResults[2]);
-            openRequests--;
-            if (openRequests === 0 && resolve) {
-              resolve();
-            }
-          }
-        }
-      };
-      process.on('message', listener);
-
-    });
-  }
-
   element.click = function () {
-    return callWDElementFunction('click');
+    return Driver.callWDFunction('WDE', 'click', [el]);
   };
 
   element.sendKeys = function (keys) {
-    return callWDElementFunction('sendKeys', [keys]);
+    return Driver.callWDFunction('WDE', 'sendKeys', [el, keys]);
   };
 
   element.clear = function () {
-    return callWDElementFunction('clear');
+    return Driver.callWDFunction('WDE', 'clear', [el]);
   };
 
   // // // // // These functions expose the user to raw webdriver, which can lead to complete execution failure
@@ -68,40 +27,40 @@ const element = function(el) {
   // // // // //
 
   element.getText = function () {
-    return callWDElementFunction('getText').then(function (gottenText) {
+    return Driver.callWDFunction('WDE', 'getText', [el]).then(function (gottenText) {
       return gottenText.trim();
     });
   };
 
   element.getAttribute = function (attr) {
-    return callWDElementFunction('getAttribute', [attr]);
+    return Driver.callWDFunction('WDE', 'getAttribute', [el, attr]);
   };
 
   element.isDisplayed = function () {
-    return callWDElementFunction('isDisplayed');
+    return Driver.callWDFunction('WDE', 'isDisplayed', [el]);
   };
 
   element.waitUntil = {
     text: {
       is: function(text) {
-        return callWDElementFunction('waitUntil', ['text', 'Is', text])
+        return Driver.callWDFunction('WDE', 'waitUntil', [el, 'text', 'Is', text])
       },
       matches: function(regex) {
-        return callWDElementFunction('waitUntil', ['text', 'Matches', regex])
+        return Driver.callWDFunction('WDE', 'waitUntil', [el, 'text', 'Matches', regex])
       },
       contains: function(text) {
-        return callWDElementFunction('waitUntil', ['text', 'Contains', text])
+        return Driver.callWDFunction('WDE', 'waitUntil', [el, 'text', 'Contains', text])
       }
     },
     value: {
       is: function(text) {
-        return callWDElementFunction('waitUntil', ['value', 'Is', text])
+        return Driver.callWDFunction('WDE', 'waitUntil', [el, 'value', 'Is', text])
       },
       matches: function(regex) {
-        return callWDElementFunction('waitUntil', ['value', 'Matches', regex])
+        return Driver.callWDFunction('WDE', 'waitUntil', [el, 'value', 'Matches', regex])
       },
       contains: function(text) {
-        return callWDElementFunction('waitUntil', ['value', 'Contains', text])
+        return Driver.callWDFunction('WDE', 'waitUntil', [el, 'value', 'Contains', text])
       }
     }
   }
@@ -139,4 +98,4 @@ const by = {
   }
 };
 
-module.exports = {element, by, getOpenRequests};
+module.exports = {element, by};

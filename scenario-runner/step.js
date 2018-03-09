@@ -1,5 +1,5 @@
 const dataTable = require('../models/data-table');
-const {driver} = require('./selenium');
+const Driver = require('./selenium');
 const element = require('./element');
 class Step {
   constructor(stepJSON, stepFunction) {
@@ -65,8 +65,7 @@ class Step {
 
       this.timeout = setTimeout(this.callback, process.env.CUCUMBER_STEP_TIMEOUT * 1000, this, new Error(`TimeoutError: Step timed out after ${process.env.CUCUMBER_STEP_TIMEOUT} seconds`));
       this.stepFunction.step.apply(this, this.regexResults).then((results) => {
-        const promises = [driver.getOpenRequests(), element.getOpenRequests()];
-        Promise.all(promises).then((promiseResults) => {
+        Driver.getOpenRequests().then(() => {
           this.callback(this, results);
         });
       });

@@ -13,11 +13,11 @@ process.on('SIGINT', () => {
     process.exit();
   })
   .on('unhandledRejection', (reason, p) => {
-    console.error(reason, 'Unhandled Rejection at Promise...but now I handled it', p);
+    console.error(reason, 'Unhandled rejection within webdriver-runner context', p);
     exitProcess();
   })
   .on('uncaughtException', (err) => {
-    console.log("Uncaught Exception...but now I caught it");
+    console.log("Uncaught Exception within webdriver-runner context");
     console.log(err);
     exitProcess();
   });
@@ -62,10 +62,9 @@ async function executeScenarios(scenarios) {
     const result = await new Promise((resolve, reject) => {
       childDriver.on('message', (m) => {
         if (/END: (.*)/.test(m)) {
-          console.log('end message received');
+          console.log('end message received', m);
           const regexResults = m.match(/END: (.*)/);
           childDriver.kill();
-          childDriver = null;
           if (regexResults[1] !== '') resolve(JSON.parse(regexResults[1]));
           else resolve();
         }

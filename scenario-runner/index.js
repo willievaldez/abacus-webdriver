@@ -2,6 +2,8 @@ const Step = require('./step');
 const StepManager = require('./step-manager');
 const HookManager = require('../models/hook-manager');
 const gatherPageObjects = require('../scripts/pageObject-finder');
+const Driver = require('./selenium');
+const Until = require('./until');
 
 // Global variables
 webdriver = require('selenium-webdriver');
@@ -10,8 +12,8 @@ by = require('./element').by;
 expect = require('chai').use(require('chai-as-promised')).expect;
 global.storedValues = {};
 
-driver = require('./selenium').driver;
-until = require('./selenium').until;
+driver = new Driver();
+until = new Until();
 
 class Scenario {
   constructor(scenarioJSON) {
