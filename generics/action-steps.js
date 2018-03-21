@@ -22,12 +22,13 @@ module.exports = ({When}) => {
         for (let i = 0; i < keys.length; i++) {
             const fieldID = keys[i].replace(/ /g, '_').toUpperCase();
             try {
-                pageMap[global.pageID][fieldID].clear();
+                // pageMap[global.pageID][fieldID].clear();
                 const result = await pageMap[global.pageID][fieldID].sendKeys(hash[keys[i]]);
-                if (result) return result;
-                await driver.actions().sendKeys(webdriver.Key.TAB).perform();
+                if (result && result !== 'null') return result;
+                // await driver.actions().sendKeys(webdriver.Key.TAB).perform();
             }
             catch (err) {
+                console.log(err);
                 throw new Error(`Error sending keys to the ${fieldID} element of ${global.pageID}`);
             }
         }

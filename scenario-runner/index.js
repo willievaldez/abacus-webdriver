@@ -1,6 +1,6 @@
 const Step = require('./step');
 const StepManager = require('./step-manager');
-const HookManager = require('../models/hook-manager');
+// const SharedObjects = require('./shared-objects');
 const gatherPageObjects = require('../scripts/pageObject-finder');
 const Driver = require('./selenium');
 const Until = require('./until');
@@ -14,6 +14,7 @@ global.storedValues = {};
 
 driver = new Driver();
 until = new Until();
+SharedObjects = require('./shared-objects');
 
 class Scenario {
   constructor(scenarioJSON) {
@@ -27,13 +28,13 @@ class Scenario {
     const scenario = this;
     process
       .on('unhandledRejection', (err, p) => {
-        console.log('scenario unhandled rejection');
+        console.log('Unhandled rejection within scenario-runner context');
         console.log(err);
         process.send(scenario.JSONError(err));
         process.exit();
       })
       .on('uncaughtException', function (err) {
-        console.log("scenario uncaught exception: ");
+        console.log("Uncaught exception within scenario-runner context");
         console.log(err);
         process.send(scenario.JSONError(err));
         process.exit();
@@ -64,9 +65,7 @@ class Scenario {
     }
 
     await gatherPageObjects();
-
     const stepManager = await StepManager.init();
-    const hookManager = await HookManager.init();
 
     let results = null;
     for (let step of this.steps) {
@@ -106,10 +105,10 @@ class Scenario {
 process.once('message', (scenario) => {
   const scenarioObject = new Scenario(scenario);
   scenarioObject.execute().then((results) => {
-    console.log(`sending: ${results}`);
+    // console.log(`sending: ${results}`);
     process.send(scenarioObject.JSONError(results));
   }).catch((err) => {
-    console.log(`senderring: ${err}`);
+    // console.log(`senderring: ${err}`);
     process.send(scenarioObject.JSONError(err));
   });
 });

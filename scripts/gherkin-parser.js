@@ -109,12 +109,11 @@ const parseFeatureFile = function(filename) {
 module.exports = function(){
   return new Promise((res, rej)=>{
     const parsedFeatureArray = [];
-    readDir(process.env.CUCUMBER_FEATURE_DIRECTORY, /^(.*).feature$/).then((files)=>{
-      files.forEach((filename)=>{
-        parseFeatureFile(filename).then((parsedFeature)=>{
-          parsedFeatureArray.push(parsedFeature);
-          if (parsedFeatureArray.length === files.length) res(parsedFeatureArray);
-        });
+    const files = readDir(process.env.CUCUMBER_FEATURE_DIRECTORY, /^(.*).feature$/);
+    files.forEach((filename)=>{
+      parseFeatureFile(filename).then((parsedFeature)=>{
+        parsedFeatureArray.push(parsedFeature);
+        if (parsedFeatureArray.length === files.length) res(parsedFeatureArray);
       });
     });
   });

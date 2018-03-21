@@ -42,10 +42,10 @@ class SeleniumDriver {
     if (/WD: (\d+) - (.*)/.test(m)) {
       const regexResults = m.match(/WD: (\d+) - (.*)/);
       const uniqueId = regexResults[1];
-      console.log('WD MESSAGE RECEIVED', m);
+      // console.log('WD MESSAGE RECEIVED', m);
 
       this.callWDFunction(regexResults[2]).then((result) => {
-        console.log(`sending WD: ${uniqueId} - ${result}`);
+        // console.log(`sending WD: ${uniqueId} - ${result}`);
         if (childDriver.connected) childDriver.send(`${uniqueId} - ${result}`);
       }).catch((err) => {
         if (childDriver.connected) childDriver.send(SeleniumDriver.jsonError(err));
@@ -54,10 +54,10 @@ class SeleniumDriver {
     else if (/WDE: (\d+) - (.*)/.test(m)) {
       const regexResults = m.match(/WDE: (\d+) - (.*)/);
       const uniqueId = regexResults[1];
-      console.log('WDE MESSAGE RECEIVED', m);
+      // console.log('WDE MESSAGE RECEIVED', m);
 
       this.callWDElementFunction(regexResults[2]).then((result) => {
-        console.log(`sending WDE: ${uniqueId} - ${result}`);
+        // console.log(`sending WDE: ${uniqueId} - ${result}`);
         if (childDriver.connected) childDriver.send(`${uniqueId} - ${result}`);
       }).catch((err) => {
         if (childDriver.connected) childDriver.send(SeleniumDriver.jsonError(err));
@@ -66,10 +66,10 @@ class SeleniumDriver {
     else if (/UNTIL: (\d+) - (.*)/.test(m)) {
       const regexResults = m.match(/UNTIL: (\d+) - (.*)/);
       const uniqueId = regexResults[1];
-      console.log('UNTIL MESSAGE RECEIVED', m);
+      // console.log('UNTIL MESSAGE RECEIVED', m);
 
       this.waitUntil(regexResults[2]).then((result) => {
-        console.log(`sending UNTIL: ${uniqueId} - ${result}`);
+        // console.log(`sending UNTIL: ${uniqueId} - ${result}`);
         if (childDriver.connected) childDriver.send(`${uniqueId} - ${result}`);
       }).catch((err) => {
         if (childDriver.connected) childDriver.send(SeleniumDriver.jsonError(err));

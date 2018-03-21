@@ -6,6 +6,7 @@ const filterScenarios = require('./scripts/filter-scenarios');
 const HookManager = require('./models/hook-manager');
 const reporter = require('./scripts/reporter');
 const setConfig = require('./scripts/config-file-parser');
+const SharedObjectListener = require('./scripts/shared-object-listener');
 
 // If the exit process is unresponsive, allow for a back door to cancel the process
 let interrupt_count = 0;
@@ -20,7 +21,7 @@ process.on('SIGINT', function () {
 // distributes equal work to the number of specified runners
 function divideScenarios(scenarios, instances) {
   const baseNum = Math.floor(scenarios.length / instances);
-  console.log(`Total Scenarios: ${scenarios.length}`);
+  console.log(`${process.pid} - Total Scenarios: ${scenarios.length}`);
   console.log(`Each runner will receive ${baseNum} scenarios`);
   let remainder = scenarios.length - (baseNum * instances);
   const scenarioPacks = [];
@@ -55,6 +56,7 @@ async function launchSauceConnect() {
 // Main function: set configuration, launch sauce connect, gather scenarios, divide scenarios, fork runners
 async function run() {
   setConfig(process.argv[2]);
+  const sharedObjects = await SharedObjectListener.init();
   await launchSauceConnect();
   const scenarios = await filterScenarios();
   const scenarioPacks = divideScenarios(scenarios, process.env.SELENIUM_BROWSER_INSTANCES);

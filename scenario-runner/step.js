@@ -30,7 +30,8 @@ class Step {
   callback(stepObj, err){
     clearTimeout(stepObj.timeout);
 
-    if (err) {
+    if (err && err !== 'null') {
+      console.log(err);
       if(process.env.SELENIUM_BROWSER_INSTANCES === '1') {
         console.log(`\x1b[31m ${stepObj.step.keyword} ${stepObj.step.step} \x1b[0m`);
         const printable = dataTable.format(stepObj.step.table);

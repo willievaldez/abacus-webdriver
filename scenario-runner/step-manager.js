@@ -25,7 +25,7 @@ class StepManager {
     const verificationSteps = require('../generics/verification-steps');
     verificationSteps(supportCode);
     
-    const stepFiles = await readDir(process.env.CUCUMBER_STEP_DEFINITION_DIRECTORY, /^(.*)-steps.js$/);
+    const stepFiles = readDir(process.env.CUCUMBER_STEP_DEFINITION_DIRECTORY, /^(.*)-steps.js$/);
     for (let i = 0; i < stepFiles.length; i++) {
       const stepsToParse = require(`${process.env.PWD}/${stepFiles[i]}`);
       stepsToParse(supportCode);

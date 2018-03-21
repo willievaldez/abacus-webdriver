@@ -59,6 +59,8 @@ module.exports = function(config){
         "selenium": {
             "browser": "chrome",
             "browser_instances":"1"
-        }
+        },
+        "shared_object_directory":"./shared_objects/",
+        "shared_object_port":"8421"
     },'');
 };

@@ -33,7 +33,7 @@ class HookManager {
       }
     };
 
-    const hookFiles = await readDir(process.env.CUCUMBER_HOOK_DIRECTORY, /^(.*)-hooks.js$/);
+    const hookFiles = readDir(process.env.CUCUMBER_HOOK_DIRECTORY, /^(.*)-hooks.js$/);
     for (let i = 0; i < hookFiles.length; i++) {
       const hooksToParse = require(`${process.env.PWD}/${hookFiles[i]}`);
       hooksToParse(supportCode);

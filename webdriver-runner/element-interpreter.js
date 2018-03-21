@@ -6,7 +6,6 @@ class Element {
   }
 
   async elementFunction(name, arg) {
-    console.log(name);
     try {
       await Element.driver.wait(until.elementLocated(this.locator), 5000, `Element ${this.locator} not in DOM`);
 

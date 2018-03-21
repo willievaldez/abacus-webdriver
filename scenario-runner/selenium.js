@@ -19,7 +19,7 @@ class Driver {
         if (/(\d+) - (.*)/.test(m)) {
           const regexResults = m.match(/(\d+) - (.*)/);
           if (regexResults[1] === `${process.pid}${callID}`) {
-            console.log(`SR ${scope} MESSAGE RECEIVED`, m);
+            // console.log(`SR ${scope} MESSAGE RECEIVED`, m);
             process.removeListener('message', listener);
             resolve(regexResults[2]);
             Driver.openRequests--;
@@ -43,7 +43,6 @@ class Driver {
   }
 
   wait(func, timeoutInterval, err=new Error(`wait time out`)) {
-    console.log(`timeout interval ${timeoutInterval}`);
     return new Promise((resolve, reject) => {
       let shouldContinue = true;
       const callback = function(){
@@ -70,7 +69,6 @@ class Driver {
   }
 
   static getOpenRequests() {
-    console.log('getting open selenium requests...');
     return new Promise((res, rej) => {
       if (Driver.openRequests === 0) res();
       else Driver.resolveOpenRequests = res;

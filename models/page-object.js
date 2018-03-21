@@ -17,7 +17,7 @@ PageObject.prototype.waitForUrlChange = async function () {
 PageObject.prototype.urlIsNot = async function (url) {
   url = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
   const regex = `^((?!^${url}$).)*$`;
-  await driver.wait(until.urlMatches(regex), 10000, `Browser never navigated away from ${url}`);
+  await driver.wait(until.urlMatches(regex), 10000, new Error(`Browser never navigated away from ${url}`));
   return driver.getCurrentUrl();
 };
 

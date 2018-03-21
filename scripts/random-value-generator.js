@@ -13,18 +13,14 @@ const init = function() {
     genericRVGs(appendRVGS);
 
     return new Promise((res, rej) => {
-        readDir(process.env.CUCUMBER_RVG_DIRECTORY, /^(.*)-rvg.js$/).then(function (rvgFiles) {
-            let readFiles = 0;
+        const rvgFiles = readDir(process.env.CUCUMBER_RVG_DIRECTORY, /^(.*)-rvg.js$/);
+        for(let rvgFilepath of rvgFiles) {
+          const rvgsToParse = require(`${process.env.PWD}/${rvgFilepath}`);
+          rvgsToParse(appendRVGS);
+        }
+        
+        res(true);
 
-            rvgFiles.forEach((rvgFilepath) => {
-                const rvgsToParse = require(`${process.env.PWD}/${rvgFilepath}`);
-                rvgsToParse(appendRVGS);
-                readFiles++;
-                if(readFiles === rvgFiles.length) {
-                    res(true);
-                }
-            });
-        });
     });
 
 };
