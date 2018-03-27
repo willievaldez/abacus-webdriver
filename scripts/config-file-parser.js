@@ -54,7 +54,7 @@ module.exports = function(config){
             "inclusive_tags": [],
             "exclusive_tags": [],
             "step_timeout": "20",
-            "redirect_timeout":"10"
+            "redirect_timeout":"20"
         },
         "selenium": {
             "browser": "chrome",

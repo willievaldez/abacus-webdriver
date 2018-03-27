@@ -24,11 +24,11 @@ module.exports = ({When}) => {
             try {
                 // pageMap[global.pageID][fieldID].clear();
                 const result = await pageMap[global.pageID][fieldID].sendKeys(hash[keys[i]]);
-                if (result && result !== 'null') return result;
+                console.log('result: '+result);
+                if (result) return result;
                 // await driver.actions().sendKeys(webdriver.Key.TAB).perform();
             }
             catch (err) {
-                console.log(err);
                 throw new Error(`Error sending keys to the ${fieldID} element of ${global.pageID}`);
             }
         }

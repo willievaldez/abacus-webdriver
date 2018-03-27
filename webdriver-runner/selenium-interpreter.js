@@ -9,7 +9,7 @@ class SeleniumDriver {
     this.driver = new webdriver.Builder().withCapabilities(SeleniumDriver.makeCapabilities()).build();
     if (process.env.SELENIUM_WIDTH && process.env.SELENIUM_HEIGHT)
       this.driver.manage().window().setSize(parseInt(process.env.SELENIUM_WIDTH), parseInt(process.env.SELENIUM_HEIGHT));
-
+    else this.driver.manage().window().maximize();
     Element.driver = this.driver;
   }
 

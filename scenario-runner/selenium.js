@@ -19,9 +19,11 @@ class Driver {
         if (/(\d+) - (.*)/.test(m)) {
           const regexResults = m.match(/(\d+) - (.*)/);
           if (regexResults[1] === `${process.pid}${callID}`) {
-            // console.log(`SR ${scope} MESSAGE RECEIVED`, m);
             process.removeListener('message', listener);
-            resolve(regexResults[2]);
+            console.log('regex results: '+ regexResults[2]);
+            if (regexResults[2] && regexResults[2] !== 'null')
+              resolve(regexResults[2]);
+            else resolve();
             Driver.openRequests--;
             if (Driver.openRequests === 0 && Driver.resolveOpenRequests) {
               Driver.resolveOpenRequests();
@@ -59,6 +61,7 @@ class Driver {
           }
           else if (shouldContinue) callFunc();
         }).catch((err) => {
+          console.log('ofuk');
           clearTimeout(timeout);
           reject(err);
         })

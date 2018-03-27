@@ -11,7 +11,7 @@ class Element {
 
       const wdElement = Element.driver.findElement(this.locator);
       Element.driver.executeScript("arguments[0].scrollIntoView(false)", wdElement);
-      await Element.driver.wait(until.elementIsVisible(wdElement), 5000, `Element ${this.locator} not visible`)
+      await Element.driver.wait(until.elementIsVisible(wdElement), 5000, `Element ${this.locator} not visible`);
       if (arg) {
         if (arg === 'ES') return Element.driver.executeScript(`arguments[0].${name}()`, wdElement);
         else return wdElement[name](arg);
@@ -20,7 +20,7 @@ class Element {
     }
     catch(err) {
       if (err.name === "StaleElementReferenceError") {
-        return Element.driver.wait(until.elementLocated(this.locator), 5000, `Element ${this.locator} not in DOM`)
+        return Element.driver.wait(until.elementLocated(this.locator), 5000, `Element ${this.locator} not in DOM`);
       }
       return err;
     }
@@ -71,7 +71,7 @@ class Element {
     return Element.driver.wait(
       until[`elementText${matchType}`](wdElement, expected),
       5000,
-      new Error(`timeout waiting until ${keyValue} ${matchType.toLowerCase()} "${expected}"`)
+      `timeout waiting until ${keyValue} ${matchType.toLowerCase()} "${expected}"`
     );
   };
 }

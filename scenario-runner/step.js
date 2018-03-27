@@ -31,7 +31,7 @@ class Step {
     clearTimeout(stepObj.timeout);
 
     if (err && err !== 'null') {
-      console.log(err);
+      if (!(err instanceof Error)) err = new Error(err);
       if(process.env.SELENIUM_BROWSER_INSTANCES === '1') {
         console.log(`\x1b[31m ${stepObj.step.keyword} ${stepObj.step.step} \x1b[0m`);
         const printable = dataTable.format(stepObj.step.table);
@@ -44,6 +44,7 @@ class Step {
     //     stepObj.step.img = `data:image/png;base64, ${png}`;
     //     stepObj.resolve(true);
     //   });
+      stepObj.resolve(err);
     }
     else {
       if (process.env.SELENIUM_BROWSER_INSTANCES === '1') {
@@ -52,10 +53,9 @@ class Step {
         if (printable) console.log(`\x1b[32m${printable}\x1b[0m`);
       }
     //   stepObj.step.status = 'Pass';
-    //   stepObj.resolve();
+      stepObj.resolve();
     }
 
-    stepObj.resolve(err);
 
   };
 
