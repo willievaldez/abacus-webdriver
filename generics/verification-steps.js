@@ -16,10 +16,11 @@ module.exports = ({Then}) => {
 
     Then(/^the "([^"]*)" element (value|text) (is|contains|matches) "(.*)"$/, async (labelText, valOrText, matchType, text) => {
         const labelID = labelText.replace(/ /g, '_').toUpperCase();
-        await pageMap[global.pageID][labelID].waitUntil[valOrText][matchType](text);
+        const untilFunc = `element${valOrText.charAt(0).toUpperCase() + valOrText.slice(1)}${matchType.charAt(0).toUpperCase() + matchType.slice(1)}`;
+        await driver.wait(until[untilFunc](pageMap[global.pageID][labelID].locator, text), 5000, `element ${valOrText} never matched "${text}"`);
     });
 
-    Then(/^the "([^"]*)" element (value|text) (is not|does not contain|does not match) "(.*)"$/, async (labelText, valOrText, matchType, text) => {
+    Then(/^the "([^"]*)" element (value|text) (is not|does not contain|does not match) "(.*)"$/, (labelText, valOrText, matchType, text) => {
         const labelID = labelText.replace(/ /g, '_').toUpperCase();
         expect(pageMap[global.pageID][labelID].getAttribute(valOrText)).to.eventually.not.contain(text);
     });

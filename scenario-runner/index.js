@@ -1,9 +1,7 @@
 const Step = require('./step');
 const StepManager = require('./step-manager');
-// const SharedObjects = require('./shared-objects');
 const gatherPageObjects = require('../scripts/pageObject-finder');
-const Driver = require('./selenium');
-const Until = require('./until');
+// const Until = require('./until');
 
 // Global variables
 webdriver = require('selenium-webdriver');
@@ -12,8 +10,8 @@ by = require('./element').by;
 expect = require('chai').use(require('chai-as-promised')).expect;
 global.storedValues = {};
 
-driver = new Driver();
-until = new Until();
+driver = require('./driver');
+until = driver.until;
 SharedObjects = require('./shared-objects');
 
 class Scenario {
@@ -30,6 +28,8 @@ class Scenario {
       .on('unhandledRejection', (err, p) => {
         console.log('Unhandled rejection within scenario-runner context');
         console.log(err);
+        console.log(p);
+        // console.log(err.message);
         process.send(scenario.JSONError(err));
         process.exit();
       })

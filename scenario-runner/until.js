@@ -1,4 +1,4 @@
-const Driver = require('./selenium');
+// const Driver = require('./selenium');
 
 class Until {
   constructor() {
@@ -7,8 +7,7 @@ class Until {
 
   urlMatches(regex) {
     return function() {
-      // regex = new RegExp(regex).toString();
-      return Driver.callWDFunction('UNTIL', 'urlMatches', [regex]);
+      return driver.until('urlMatches',[regex]);
     }
   }
 }

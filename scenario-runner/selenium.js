@@ -49,6 +49,9 @@ class Driver {
       let shouldContinue = true;
       const callback = function(){
         shouldContinue = false;
+        if (!(err instanceof Error)) {
+          err = new Error(err);
+        }
         reject(err);
       };
       const timeout = setTimeout(callback, timeoutInterval);
@@ -61,14 +64,13 @@ class Driver {
           }
           else if (shouldContinue) callFunc();
         }).catch((err) => {
-          console.log('ofuk');
+          console.log('caught that error');
           clearTimeout(timeout);
           reject(err);
         })
       };
       callFunc();
     });
-
   }
 
   static getOpenRequests() {

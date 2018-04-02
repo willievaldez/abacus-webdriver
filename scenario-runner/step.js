@@ -1,6 +1,6 @@
 const dataTable = require('../models/data-table');
-const Driver = require('./selenium');
 const element = require('./element');
+const getOpenRequests = require('./shared-objects').getOpenRequests;
 class Step {
   constructor(stepJSON, stepFunction) {
     this.step = stepJSON;
@@ -38,12 +38,7 @@ class Step {
         if (printable) console.log(`\x1b[31m${printable}\x1b[0m`);
         console.log('\t'+err.message.replace('\n','\n\t'));
       }
-    //   stepObj.step.status = 'Fail';
-    //   stepObj.step.error = {message: err.message, stack: err.stack};
-    //   driver.takeScreenshot().then((png) => {
-    //     stepObj.step.img = `data:image/png;base64, ${png}`;
-    //     stepObj.resolve(true);
-    //   });
+
       stepObj.resolve(err);
     }
     else {
@@ -52,7 +47,6 @@ class Step {
         const printable = dataTable.format(stepObj.step.table);
         if (printable) console.log(`\x1b[32m${printable}\x1b[0m`);
       }
-    //   stepObj.step.status = 'Pass';
       stepObj.resolve();
     }
 
@@ -66,7 +60,7 @@ class Step {
 
       this.timeout = setTimeout(this.callback, process.env.CUCUMBER_STEP_TIMEOUT * 1000, this, new Error(`TimeoutError: Step timed out after ${process.env.CUCUMBER_STEP_TIMEOUT} seconds`));
       this.stepFunction.step.apply(this, this.regexResults).then((results) => {
-        Driver.getOpenRequests().then(() => {
+        getOpenRequests().then(() => {
           this.callback(this, results);
         });
       });
