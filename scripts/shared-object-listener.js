@@ -6,21 +6,17 @@ app.use(bodyParser.json());
 
 class SharedObjectListener {
   constructor() {
-
+    this.sharedObjects = {};
   }
 
   static async init() {
     const sharedObjectListener = new SharedObjectListener();
     const sharedObjectFiles = readDir(process.env.SHARED_OBJECT_DIRECTORY, /(.*).js/);
     global.storedValues = {};
-    const sharedObjects = {};
-    for (let sharedObjectPath of sharedObjectFiles) {
-      const SharedObject = require(`${process.env.PWD}/${sharedObjectPath}`);
-      const sharedObject = await SharedObject.init();
-      sharedObjects[sharedObject.name] = sharedObject;
-    }
 
-    sharedObjectListener.sharedObjects = sharedObjects;
+    for (let sharedObjectPath of sharedObjectFiles) {
+      await sharedObjectListener.addSharedObject(`${process.env.PWD}/${sharedObjectPath}`);
+    }
 
     app.get('/:pid/:key', (req, res) => {
       res.send(sharedObjectListener.getStoredValue(req.params));
@@ -31,16 +27,38 @@ class SharedObjectListener {
       res.send();
     });
 
+    app.post('/webdriver/init', (req, res) => {
+      sharedObjectListener.addSharedObject('../generics/webdriver-shared-object').then((wd) => {
+        sharedObjectListener.addSharedObject('../generics/element-shared-object').then((element) => {
+          element.driver = wd.driver;
+          res.send({});
+        });
+      });
+    })
+
     app.post('/:obj/:cmd', (req, res) => {
+      const sharedObjects = sharedObjectListener.sharedObjects;
       sharedObjects[req.params.obj][req.params.cmd](req.body).then((resp) => {
-        console.log('sending');
-        res.send(resp);
+        if (resp instanceof Error) {
+          res.statusCode = 500;
+          resp = {err: {stack:resp.stack, message: resp.message}};
+        }
+        else res.send(resp);
       });
     });
 
     app.listen(process.env.SHARED_OBJECT_PORT);
 
     return sharedObjectListener;
+  }
+
+  async addSharedObject(path) {
+    const SharedObject = require(path);
+    let sharedObject;
+    if (SharedObject.init) sharedObject = await SharedObject.init();
+    else sharedObject = new SharedObject();
+    this.sharedObjects[sharedObject.name] = sharedObject;
+    return sharedObject;
   }
 
   addStoredValue({pid, key, val}) {

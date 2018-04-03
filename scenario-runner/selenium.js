@@ -45,11 +45,14 @@ class Driver {
   }
 
   wait(func, timeoutInterval, err=new Error(`wait time out`)) {
+    console.log('wait func');
+    console.log(func);
     return new Promise((resolve, reject) => {
       let shouldContinue = true;
       const callback = function(){
         shouldContinue = false;
         if (!(err instanceof Error)) {
+          console.log('not an error');
           err = new Error(err);
         }
         reject(err);
