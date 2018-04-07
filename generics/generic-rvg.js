@@ -205,7 +205,7 @@ module.exports = (rvg) => {
         const date = new Date();
         const yearToday = date.getFullYear();
         const randYear = chance.integer({min: yearToday - 6, max: yearToday - 1});
-        return moment(chance.date({string: true, year: randYear}), ‘MM/DD/YYYY’).format(‘MM/DD/YYYY’);
+        return moment(chance.date({string: true, year: randYear}), 'MM/DD/YYYY').format('MM/DD/YYYY');
     });
 
 };
