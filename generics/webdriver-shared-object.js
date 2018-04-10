@@ -81,6 +81,10 @@ class WebdriverSharedObject extends SharedObject {
     });
   }
 
+  getAllWindowHandles() {
+    return this.driver.getAllWindowHandles();
+  }
+
 }
 
 module.exports = WebdriverSharedObject;

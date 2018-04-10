@@ -27,15 +27,19 @@ class SharedObjects {
     const httpPromise = rp(options);
 
     openRequests++;
-    httpPromise.then(() => {
-      openRequests--;
-      if (openRequests === 0 && openRequestResolve) openRequestResolve();
-    }).catch((err) => {
-      console.log('omgwtfbbq');
-      console.log(err);
+    return new Promise((resolve, reject) => {
+      httpPromise.then((response) => {
+        openRequests--;
+        if (openRequests === 0 && openRequestResolve) openRequestResolve();
+        resolve(response);
+      }).catch((err) => {
+        openRequests--;
+        if (openRequests === 0 && openRequestResolve) openRequestResolve();
+        reject(err);
+      });
     });
 
-    return httpPromise;
+
   }
 }
 

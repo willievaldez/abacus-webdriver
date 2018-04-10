@@ -42,8 +42,13 @@ class SharedObjectListener {
         if (resp instanceof Error) {
           res.statusCode = 500;
           resp = {err: {stack:resp.stack, message: resp.message}};
+          res.send(resp);
         }
         else res.send(resp);
+      }).catch((err) => {
+        res.statusCode = 500;
+        const resp = {err: {stack:err.stack, message: err.message}};
+        res.send(resp);
       });
     });
 
