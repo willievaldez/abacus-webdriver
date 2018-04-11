@@ -42,6 +42,7 @@ const untilHandler = {
 
 const handler = {
   get: function(obj, prop) {
+    if (prop === 'Key') return require('selenium-webdriver').Key;
     if (prop === 'until') return new Proxy({}, untilHandler);
     if (prop === 'wait') {
       return function() {

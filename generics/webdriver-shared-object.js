@@ -85,6 +85,10 @@ class WebdriverSharedObject extends SharedObject {
     return this.driver.getAllWindowHandles();
   }
 
+  sendKeys([keyEnum]) {
+    return this.driver.actions().sendKeys(keyEnum).perform();
+  }
+
 }
 
 module.exports = WebdriverSharedObject;

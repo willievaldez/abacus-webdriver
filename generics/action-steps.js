@@ -28,7 +28,6 @@ module.exports = ({When}) => {
       try {
         const result = await pageMap[global.pageID][fieldID].sendKeys(hash[keys[i]]);
         if (result) return result;
-        // await driver.actions().sendKeys(webdriver.Key.TAB).perform();
       }
       catch (err) {
         throw new Error(`Error sending keys to the ${fieldID} element of ${global.pageID}`);
@@ -37,7 +36,7 @@ module.exports = ({When}) => {
   });
 
   When(/^user presses the (.*) key/, async (key) => {
-    await driver.actions().sendKeys(webdriver.Key[key]).perform();
+    await driver.sendKeys(driver.Key[key]);
   });
 
   When(/^user waits for ([0-9]+) seconds$/, async (num) => {
