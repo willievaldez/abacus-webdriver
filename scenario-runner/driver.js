@@ -30,6 +30,10 @@ const untilHandler = {
   get: function(obj, prop) {
     return function() {
       const args = [];
+      if (prop.indexOf("element") >= 0) {
+        arguments[0] = arguments[0].locator;
+      }
+
       for (arg of arguments) {
         args.push(arg);
       }

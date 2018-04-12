@@ -17,7 +17,7 @@ module.exports = ({Then}) => {
     Then(/^the "([^"]*)" element (value|text) (is|contains|matches) "(.*)"$/, async (labelText, valOrText, matchType, text) => {
         const labelID = labelText.replace(/ /g, '_').toUpperCase();
         const untilFunc = `element${valOrText.charAt(0).toUpperCase() + valOrText.slice(1)}${matchType.charAt(0).toUpperCase() + matchType.slice(1)}`;
-        await driver.wait(until[untilFunc](pageMap[global.pageID][labelID].locator, text), 5000, `element ${valOrText} never matched "${text}"`);
+        await driver.wait(until[untilFunc](pageMap[global.pageID][labelID], text), 5000, `element ${valOrText} never matched "${text}"`);
     });
 
     Then(/^the "([^"]*)" element (value|text) (is not|does not contain|does not match) "(.*)"$/, (labelText, valOrText, matchType, text) => {
@@ -75,4 +75,10 @@ module.exports = ({Then}) => {
         const handles = await driver.getAllWindowHandles();
         if (handles.length !== numTabs) throw new Error(`Expected ${numTabs} tabs, but got ${handles.length}`);
     });
+
+  Then(/^the "([^"]*)" element is enabled$/, async (elementText) => {
+    const elementID = elementText.replace(/ /g, '_').toUpperCase();
+    const untilPromise = await until.elementIsEnabled(pageMap[global.pageID][elementID]);
+    await driver.wait(untilPromise, 5000, 'element is not enabled after 5 sec');
+  });
 };

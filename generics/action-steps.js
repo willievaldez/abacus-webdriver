@@ -21,9 +21,7 @@ module.exports = ({When}) => {
     const keys = Object.keys(hash);
     for (let i = 0; i < keys.length; i++) {
       const fieldID = keys[i].replace(/ /g, '_').toUpperCase();
-      await pageMap[global.pageID][fieldID].clear().catch((err) => {
-        console.log(fieldID);
-      });
+      await pageMap[global.pageID][fieldID].clear().catch(() => {});
 
       try {
         const result = await pageMap[global.pageID][fieldID].sendKeys(hash[keys[i]]);
