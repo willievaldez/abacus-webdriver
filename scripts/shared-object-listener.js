@@ -12,20 +12,10 @@ class SharedObjectListener {
   static async init() {
     const sharedObjectListener = new SharedObjectListener();
     const sharedObjectFiles = readDir(process.env.SHARED_OBJECT_DIRECTORY, /(.*).js/);
-    global.storedValues = {};
 
     for (let sharedObjectPath of sharedObjectFiles) {
       await sharedObjectListener.addSharedObject(`${process.env.PWD}/${sharedObjectPath}`);
     }
-
-    app.get('/:pid/:key', (req, res) => {
-      res.send(sharedObjectListener.getStoredValue(req.params));
-    });
-
-    app.put('/:pid/:key/:val', (req, res) => {
-      sharedObjectListener.addStoredValue(req.params);
-      res.send();
-    });
 
     app.post('/webdriver/init', (req, res) => {
       sharedObjectListener.addSharedObject('../generics/webdriver-shared-object').then((wd) => {
@@ -64,16 +54,6 @@ class SharedObjectListener {
     else sharedObject = new SharedObject();
     this.sharedObjects[sharedObject.name] = sharedObject;
     return sharedObject;
-  }
-
-  addStoredValue({pid, key, val}) {
-    if (!global.storedValues[pid]) global.storedValues[pid] = {};
-    global.storedValues[pid][key] = val;
-  }
-
-  getStoredValue({pid, key}) {
-    if (!global.storedValues[pid]) return null;
-    return global.storedValues[pid][key]
   }
 
 }

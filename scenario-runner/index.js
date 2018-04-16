@@ -1,7 +1,6 @@
 const Step = require('./step');
 const StepManager = require('./step-manager');
 const gatherPageObjects = require('../scripts/pageObject-finder');
-// const Until = require('./until');
 
 // Global variables
 webdriver = require('selenium-webdriver');
@@ -28,7 +27,7 @@ class Scenario {
       .on('unhandledRejection', (err, p) => {
         console.log('Unhandled rejection within scenario-runner context');
         // console.log(err);
-        console.log(p);
+        // console.log(p);
         console.log(err.message);
         process.send(scenario.JSONError(err));
         process.exit();
