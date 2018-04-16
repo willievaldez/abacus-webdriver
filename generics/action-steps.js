@@ -34,7 +34,7 @@ module.exports = ({When}) => {
   });
 
   When(/^user presses the (.*) key/, async (key) => {
-    await driver.sendKeys(driver.Key[key]);
+    await driver.sendKeys(driver.Key[key.toUpperCase()]);
   });
 
   When(/^user waits for ([0-9]+) seconds$/, async (num) => {
