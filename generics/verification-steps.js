@@ -61,7 +61,7 @@ module.exports = ({Then}) => {
 
     Then(/^the "([^"]*)" element (is|is not) present$/, async (elementText, yorn) => {
         const elementID = elementText.replace(/ /g, '_').toUpperCase();
-        const result = await driver.wait(pageMap[global.pageID][elementID].isDisplayed(), 5000);
+        const result = await pageMap[global.pageID][elementID].isDisplayed();
 
         if (yorn === 'is not') {
             if (result === true) throw new Error(`${elementID} Element is displayed`);
