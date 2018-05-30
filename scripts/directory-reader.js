@@ -4,6 +4,10 @@ const readDirectory = function (dir, fileRegex) {
     if (dir.substring(0,2) !== './') dir = `./${dir}`;
     if (dir.charAt(dir.length-1) !== '/') dir = `${dir}/`;
 
+    if (!fs.existsSync(dir)) {
+        return [];
+    }
+
     // Recursive function that takes in a file directory and returns all files that match fileRegex
     // if an object in the directory is a directory itself, call readDir on that directory
     const readDir = function (dir, level) {
