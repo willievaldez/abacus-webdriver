@@ -11,7 +11,7 @@
     "chance": "1.0.12",
     "chromedriver": "2.33.2",
     "moment": "2.19.1",
-    "open": "0.0.5",
+    "open": "7.3.0",
     "sauce-connect-launcher": "1.2.3",
     "selenium-webdriver": "3.6.0"
   },
