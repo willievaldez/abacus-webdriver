@@ -10,7 +10,7 @@
     "chai-as-promised": "7.1.1",
     "chance": "1.0.12",
     "chromedriver": "2.33.2",
-    "moment": "2.19.1",
+    "moment": "2.29.1",
     "open": "0.0.5",
     "sauce-connect-launcher": "1.2.3",
     "selenium-webdriver": "3.6.0"
